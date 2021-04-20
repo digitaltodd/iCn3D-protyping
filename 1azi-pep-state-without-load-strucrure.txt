@@ -1,0 +1,39 @@
+select main chains
+color grey
+select .A:2-17 | name peptide 01 fpop value = 0.601109658
+style sidec ball and stick
+color #cc0300
+select .A:18-32 | name peptide 02 fpop value = 0.079598829
+style sidec nothing
+color #D3D3D3
+select .A:33-43 | name peptide 03 fpop value = 0.129321638
+style sidec ball and stick
+color #cca0a0
+select .A:64-79 | name peptide 04 fpop value = 0.33615972
+style sidec ball and stick
+color #cc5b59pwd
+select .A:80-88 | name peptide 05 fpop value = 0.255505346
+style sidec ball and stick
+color #cc7675
+select .A:80-97 | name peptide 06 fpop value = 0.335083831
+style sidec ball and stick
+color #cc5c5a
+select .A:81-97 | name peptide 07 fpop value = 0.352149128
+style sidec ball and stick
+color #cc5654
+select .A:104-119 | name peptide 08 fpop value = 0.327020816
+style sidec ball and stick
+color #cc5e5d
+select .A:120-134 | name peptide 09 fpop value = 0.376190687
+style sidec ball and stick
+color #cc4e4c
+select .A:135-140 | name peptide 10 fpop value = 0.030749605
+style sidec nothing
+color #D3D3D3
+select .A:147-154 | name peptide 11 fpop value = 0.252868233
+style sidec ball and stick
+color #cc7776
+set mode all
+select main chains
+set surface Van der Waals surface
+set mode all
