@@ -17,8 +17,8 @@ Head over to [Python.org](https://www.python.org/) to download the latest versio
 * From `https://chromedriver.chromium.org/downloads` install the current version of Chrome you have on your computer
 * If you don't have Chrome - `https://www.google.com/chrome/`
   * Make sure that The version of Chrome matches the version of the webdriver otherwise you will get an error
-  * On Mac OS you may get a "chromedriver” cannot be opened because the developer cannot be verified. Unable to launch the chrome browser" error. To fix run: xattr -d com.apple.quarantine /$PATH/chromedriver - 
-  * In my case this was xattr -d com.apple.quarantine /Users/todd/bin/chromedriver
+  * On Mac OS you may get a "chromedriver” cannot be opened because the developer cannot be verified. Unable to launch the chrome browser" error. To fix run: `xattr -d com.apple.quarantine /$PATH/chromedriver` 
+  * In my case this was `xattr -d com.apple.quarantine /Users/todd/bin/chromedriver`
 
 ## Built With
 * Python
