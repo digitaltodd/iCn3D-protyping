@@ -1,0 +1,28 @@
+# iCn3D menu_parser
+
+## Getting Started
+The purpose of this project is to create a simple and convenient method of identifying all the menu items in iCn3D to create a custom menu configuration file. When everything is downloaded and ready to go, run an instance of iCn3D on your local server and simply run the program.
+
+## Prerequisites
+* Python
+* selenium
+* bs4
+* Chrome webdriver
+
+## Installing
+Head over to [Python.org](https://www.python.org/) to download the latest version of Python if you haven't already. Make sure to enable pip in  `Optional Features` when installing. After installing, head over to Advanced System Settings -> Environment Variables and add Python into PATH. 
+* This instance of selenium webdriver uses Chrome
+* To install selenium - run `pip3 install selenium`
+* To install bs4 - run `pip3 isntall bs4`
+* From `https://chromedriver.chromium.org/downloads` install the current version of Chrome you have on your computer
+* If you don't have Chrome - `https://www.google.com/chrome/`
+  * Make sure that The version of Chrome matches the version of the webdriver otherwise you will get an error
+
+## Built With
+* Python
+* selenium
+* bs4
+* Chrome webdriver
+  
+## Authors
+th3linja

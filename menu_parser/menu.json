@@ -1,0 +1,537 @@
+{
+    "File": {
+        "Retrieve by ID": {
+            "self": ["ui-id-13", 1],
+            "MMDB ID ": ["div0_mn1_mmdbid", 1],
+            "MMTF ID ": ["div0_mn1_mmtfid", 1],
+            "PDB ID ": ["div0_mn1_pdbid", 1],
+            "AlphaFold UniProt ID ": ["div0_mn1_afid", 1],
+            "OPM PDB ID ": ["div0_mn1_opmid", 1],
+            "mmCIF ID ": ["div0_mn1_mmcifid", 1],
+            "NCBI gi ": ["div0_mn1_gi", 1],
+            "UniProt ID ": ["div0_mn1_uniprotid", 1],
+            "PubChem CID ": ["div0_mn1_cid", 1]
+        },
+        "Open File": {
+            "self": ["ui-id-14", 1],
+            "PDB File (appendable)": ["div0_mn1_pdbfile_app", 1],
+            "mmCIF File": ["div0_mn1_mmciffile", 1],
+            "Mol2 File": ["div0_mn1_mol2file", 1],
+            "SDF File": ["div0_mn1_sdffile", 1],
+            "XYZ File": ["div0_mn1_xyzfile", 1],
+            "URL(Same Host) ": ["div0_mn1_urlfile", 1],
+            "-": [null, 1],
+            "iCn3D PNG Image": ["div0_mn1_pngimage", 1],
+            "State/Script File": ["div0_mn1_state", 1],
+            "Share Link in Archived Ver. ": ["div0_mn1_fixedversion", 1],
+            "Selection File": ["div0_mn1_selection", 1],
+            "Electron Density(DSN6)": {
+                "self": ["ui-id-15", 1],
+                "Local File": ["div0_mn1_dsn6", 1],
+                "URL(Same Host) ": ["div0_mn1_dsn6url", 1]
+            }
+        },
+        "Align": {
+            "self": ["ui-id-16", 1],
+            "Sequence to Structure ": ["div0_mn1_blast_rep_id", 1],
+            "Structure to Structure ": ["div0_mn1_align", 1],
+            "Multiple Chains ": ["div0_mn1_chainalign", 1]
+        },
+        "Realign Selection": {
+            "self": ["ui-id-17", 1],
+            "on Sequence Alignment ": ["ui-id-18", 1],
+            "Residue by Residue": ["ui-id-19", 1]
+        },
+        "3D Printing": {
+            "self": ["ui-id-20", 1],
+            "WRL/VRML(Color, W/ Stab.)": ["div0_mn1_exportVrmlStab", 1],
+            "STL(W/ Stabilizers)": ["div0_mn1_exportStlStab", 1],
+            "-": [null, 1],
+            "WRL/VRML(Color)": ["div0_mn1_exportVrml", 1],
+            "STL": ["div0_mn1_exportStl", 1],
+            "Add All Stabilizers": ["div0_mn1_stabilizerYes", 1],
+            "Remove All Stabilizers": ["div0_mn1_stabilizerNo", 1],
+            "Add One Stabilizer": ["div0_mn1_stabilizerOne", 1],
+            "Remove One Stabilizer": ["div0_mn1_stabilizerRmOne", 1],
+            "Set Thickness": ["div0_mn1_thicknessSet", 1]
+        },
+        "Save Files": {
+            "self": ["ui-id-21", 1],
+            "iCn3D PNG Image": {
+                "self": ["ui-id-22", 1],
+                "Original Size & HTML": ["div0_mn1_exportCanvas", 1],
+                "Original Size": ["div0_mn1_exportCanvas1", 1],
+                "2X Large": ["div0_mn1_exportCanvas2", 1],
+                "4X Large": ["div0_mn1_exportCanvas4", 1],
+                "8X Large": ["div0_mn1_exportCanvas8", 1]
+            },
+            "State File": ["div0_mn1_exportState", 1],
+            "Selection File": ["div0_mn1_exportSelections", 1],
+            "Residue Counts": ["div0_mn1_exportCounts", 1],
+            "PDB": ["div0_mn1_exportPdbRes", 1]
+        },
+        "Share Link ": ["div0_mn1_sharelink", 1],
+        "Replay Each Step": ["div0_mn1_replayon", 1]
+    },
+    "Select": {
+        "Defined Sets": ["div0_mn2_definedsets", 1],
+        "All": ["div0_mn2_selectall", 1],
+        "Displayed Set": ["div0_mn2_selectdisplayed", 1],
+        "by Distance": ["div0_mn2_aroundsphere", 1],
+        "by Property": {
+            "self": ["ui-id-24", 1],
+            "Positive": ["div0_mn2_propPos", 1],
+            "Negative": ["div0_mn2_propNeg", 1],
+            "Hydrophobic": ["div0_mn2_propHydro", 1],
+            "Polar": ["div0_mn2_propPolar", 1],
+            "B-factor": ["div0_mn2_propBfactor", 1],
+            "Solvent Accessibility": ["div0_mn2_propSolAcc", 1]
+        },
+        "Inverse": ["div0_mn2_selectcomplement", 1],
+        "Main Chains": ["div0_mn2_selectmainchains", 1],
+        "Side Chains": ["div0_mn2_selectsidechains", 1],
+        "Main & Side Chains": ["div0_mn2_selectmainsidechains", 1],
+        "Advanced": ["div0_mn2_command", 1],
+        "Select on 3D": {
+            "self": ["ui-id-25", 1],
+            "\"Alt\"+Click: start selection": [null, 1],
+            "\"Ctrl\"+Click: union selection": [null, 1],
+            "\"Shift\"+Click: range Selection": [null, 1],
+            "-": [null, 1],
+            "Chain": ["ui-id-26", 1],
+            "Strand/Helix": ["ui-id-27", 1],
+            "Residue": ["ui-id-28", 1],
+            "Atom": ["ui-id-29", 1],
+            "None": ["ui-id-30", 1]
+        },
+        "-": ["ui-id-23", 1],
+        "Save Selection": ["div0_mn2_saveselection", 1],
+        "Clear Selection": ["div0_clearall", 1],
+        "Highlight Color": {
+            "self": ["ui-id-31", 1],
+            "Yellow": ["ui-id-32", 1],
+            "Green": ["ui-id-33", 1],
+            "Red": ["ui-id-34", 1]
+        },
+        "Highlight Style": {
+            "self": ["ui-id-35", 1],
+            "Outline": ["ui-id-36", 1],
+            "3D Objects": ["ui-id-37", 1]
+        },
+        "Toggle Highlight": ["div0_toggleHighlight2", 1]
+    },
+    "View": {
+        "View Selection": ["div0_mn2_show_selected", 1],
+        "Hide Selection": ["div0_mn2_hide_selected", 1],
+        "Zoom in Selection": ["div0_mn2_selectedcenter", 1],
+        "Center Selection": ["div0_mn6_center", 1],
+        "View Full Structure": ["div0_mn2_fullstru", 1],
+        "Alternate(Key \"a\")": ["div0_mn2_alternate", 1],
+        "Toggle Membrane": ["div0_togglemem", 1],
+        "Adjust Membrane": ["div0_adjustmem", 1],
+        "-": ["ui-id-38", 1],
+        "Side by Side": ["div0_mn6_sidebyside", 1],
+        "Rotate": {
+            "self": ["ui-id-39", 1],
+            "Rotate 90\u00b0": {
+                "self": ["ui-id-40", 1],
+                "X-axis(Shift + Key M)": ["ui-id-41", 1],
+                "Y-axis(Shift + Key J)": ["ui-id-42", 1],
+                "Z-axis": ["ui-id-43", 1]
+            },
+            "Auto Rotation": {
+                "self": ["ui-id-44", 1],
+                "Rotate Left": ["ui-id-45", 1],
+                "Rotate Right": ["ui-id-46", 1],
+                "Rotate Up": ["ui-id-47", 1],
+                "Rotate Down": ["ui-id-48", 1]
+            }
+        },
+        "Camera": {
+            "self": ["ui-id-49", 1],
+            "Perspective": ["ui-id-50", 1],
+            "Orthographic": ["ui-id-51", 1]
+        },
+        "Fog for Selection": {
+            "self": ["ui-id-52", 1],
+            "On": ["ui-id-53", 1],
+            "Off": ["ui-id-54", 1]
+        },
+        "Slab for Selection": {
+            "self": ["ui-id-55", 1],
+            "On": ["ui-id-56", 1],
+            "Off": ["ui-id-57", 1]
+        },
+        "XYZ-axes": {
+            "self": ["ui-id-58", 1],
+            "Original": ["ui-id-59", 1],
+            "Prin. Axes on Sel.": ["ui-id-60", 1],
+            "Hide": ["ui-id-61", 1]
+        },
+        "Reset": {
+            "self": ["ui-id-62", 1],
+            "All": ["ui-id-63", 1],
+            "Orientation": ["ui-id-64", 1]
+        },
+        "Undo": ["div0_mn6_back", 1],
+        "Redo": ["div0_mn6_forward", 1],
+        "Full Screen": ["div0_mn6_fullscreen", 1]
+    },
+    "Style": {
+        "Proteins": {
+            "self": ["ui-id-66", 1],
+            "Ribbon": ["ui-id-67", 1],
+            "Strand": ["ui-id-68", 1],
+            "Cylinder and Plate": ["ui-id-69", 1],
+            "Schematic": ["ui-id-70", 1],
+            "C Alpha Trace": ["ui-id-71", 1],
+            "Backbone": ["ui-id-72", 1],
+            "B-factor Tube": ["ui-id-73", 1],
+            "Lines": ["ui-id-74", 1],
+            "Stick": ["ui-id-75", 1],
+            "Ball and Stick": ["ui-id-76", 1],
+            "Sphere": ["ui-id-77", 1],
+            "Hide": ["ui-id-78", 1]
+        },
+        "Side Chains": {
+            "self": ["ui-id-79", 1],
+            "Lines": ["ui-id-80", 1],
+            "Stick": ["ui-id-81", 1],
+            "Ball and Stick": ["ui-id-82", 1],
+            "Sphere": ["ui-id-83", 1],
+            "Hide": ["ui-id-84", 1]
+        },
+        "Nucleotides": {
+            "self": ["ui-id-85", 1],
+            "Cartoon": ["ui-id-86", 1],
+            "O3' Trace": ["ui-id-87", 1],
+            "Backbone": ["ui-id-88", 1],
+            "Schematic": ["ui-id-89", 1],
+            "Lines": ["ui-id-90", 1],
+            "Stick": ["ui-id-91", 1],
+            "Ball and Stick": ["ui-id-92", 1],
+            "Sphere": ["ui-id-93", 1],
+            "Hide": ["ui-id-94", 1]
+        },
+        "Chemicals": {
+            "self": ["ui-id-95", 1],
+            "Lines": ["ui-id-96", 1],
+            "Stick": ["ui-id-97", 1],
+            "Ball and Stick": ["ui-id-98", 1],
+            "Schematic": ["ui-id-99", 1],
+            "Sphere": ["ui-id-100", 1],
+            "Hide": ["ui-id-101", 1]
+        },
+        "Glycans": {
+            "self": ["ui-id-102", 1],
+            "Show Cartoon": ["ui-id-103", 1],
+            "Hide Cartoon": ["ui-id-104", 1]
+        },
+        "Ions": {
+            "self": ["ui-id-105", 1],
+            "Sphere": ["ui-id-106", 1],
+            "Dot": ["ui-id-107", 1],
+            "Hide": ["ui-id-108", 1]
+        },
+        "Water": {
+            "self": ["ui-id-109", 1],
+            "Sphere": ["ui-id-110", 1],
+            "Dot": ["ui-id-111", 1],
+            "Hide": ["ui-id-112", 1]
+        },
+        "Preferences": ["div0_mn3_setThickness", 1],
+        "-": ["ui-id-65", 1],
+        "Save Style": ["div0_mn3_styleSave", 1],
+        "Apply Saved Style": ["div0_mn3_styleApplySave", 1],
+        "Surface Type": {
+            "self": ["ui-id-113", 1],
+            "Van der Waals": ["ui-id-114", 1],
+            "VDW with Context": ["ui-id-115", 1],
+            "Molecular Surface": ["ui-id-116", 1],
+            "MS with Context": ["ui-id-117", 1],
+            "Solvent Accessible": ["ui-id-118", 1],
+            "SA with Context": ["ui-id-119", 1]
+        },
+        "Remove Surface": ["div0_mn5_surfaceNo", 1],
+        "Surface Opacity": {
+            "self": ["ui-id-120", 1],
+            "1.0": ["ui-id-121", 1],
+            "0.9": ["ui-id-122", 1],
+            "0.8": ["ui-id-123", 1],
+            "0.7": ["ui-id-124", 1],
+            "0.6": ["ui-id-125", 1],
+            "0.5": ["ui-id-126", 1],
+            "0.4": ["ui-id-127", 1],
+            "0.3": ["ui-id-128", 1],
+            "0.2": ["ui-id-129", 1],
+            "0.1": ["ui-id-130", 1]
+        },
+        "Surface Wireframe": {
+            "self": ["ui-id-131", 1],
+            "Yes": ["ui-id-132", 1],
+            "No": ["ui-id-133", 1]
+        },
+        "Electron Density": {
+            "self": ["ui-id-134", 1],
+            "2Fo-Fc Map": ["ui-id-135", 1],
+            "Fo-Fc Map": ["ui-id-136", 1]
+        },
+        "Remove Map": ["div0_mn5_elecmapNo", 1],
+        "Map Wireframe": {
+            "self": ["ui-id-137", 1],
+            "Yes": ["ui-id-138", 1],
+            "No": ["ui-id-139", 1]
+        },
+        "EM Density Map": ["div0_mn5_emmap", 1],
+        "Remove EM Map": ["div0_mn5_emmapNo", 1],
+        "EM Map Wireframe": {
+            "self": ["ui-id-140", 1],
+            "Yes": ["ui-id-141", 1],
+            "No": ["ui-id-142", 1]
+        },
+        "Background": {
+            "self": ["ui-id-143", 1],
+            "Transparent": ["ui-id-144", 1],
+            "Black": ["ui-id-145", 1],
+            "Gray": ["ui-id-146", 1],
+            "White": ["ui-id-147", 1]
+        },
+        "Dialog Color": {
+            "self": ["ui-id-148", 1],
+            "Blue": ["ui-id-149", 1],
+            "Orange": ["ui-id-150", 1],
+            "Black": ["ui-id-151", 1]
+        }
+    },
+    "Color": {
+        "Unicolor": {
+            "self": ["ui-id-153", 1],
+            "Red": {
+                "self": ["ui-id-154", 1],
+                "\u00a0\u00a0\u00a0": ["ui-id-163", 1]
+            },
+            "Pink": {
+                "self": ["ui-id-164", 1],
+                "\u00a0\u00a0\u00a0": ["ui-id-170", 1]
+            },
+            "Orange": {
+                "self": ["ui-id-171", 1],
+                "\u00a0\u00a0\u00a0": ["ui-id-177", 1]
+            },
+            "Yellow": {
+                "self": ["ui-id-178", 1],
+                "\u00a0\u00a0\u00a0": ["ui-id-189", 1]
+            },
+            "Magenta": {
+                "self": ["ui-id-190", 1],
+                "\u00a0\u00a0\u00a0": ["ui-id-208", 1]
+            },
+            "Green": {
+                "self": ["ui-id-209", 1],
+                "\u00a0\u00a0\u00a0": ["ui-id-231", 1]
+            },
+            "Cyan": {
+                "self": ["ui-id-232", 1],
+                "\u00a0\u00a0\u00a0": ["ui-id-239", 1]
+            },
+            "Blue": {
+                "self": ["ui-id-240", 1],
+                "\u00a0\u00a0\u00a0": ["ui-id-257", 1]
+            },
+            "Brown": {
+                "self": ["ui-id-258", 1],
+                "\u00a0\u00a0\u00a0": ["ui-id-275", 1]
+            },
+            "White": {
+                "self": ["ui-id-276", 1],
+                "\u00a0\u00a0\u00a0": ["ui-id-293", 1]
+            },
+            "Gray": {
+                "self": ["ui-id-294", 1],
+                "\u00a0\u00a0\u00a0": ["ui-id-304", 1]
+            }
+        },
+        "Color Picker": ["ui-id-305", 1],
+        "-": ["ui-id-152", 1],
+        "Spectrum (V-R)": ["ui-id-306", 1],
+        "Rainbow (R-V)": {
+            "self": ["ui-id-307", 1],
+            "for Selection": ["ui-id-308", 1],
+            "for Chains": ["ui-id-309", 1]
+        },
+        "Secondary": {
+            "self": ["ui-id-310", 1],
+            "Sheet in Green": ["ui-id-311", 1],
+            "Sheet in Yellow": ["ui-id-312", 1],
+            "Spectrum": ["ui-id-313", 1]
+        },
+        "Charge": ["ui-id-314", 1],
+        "Hydrophobicity": {
+            "self": ["ui-id-315", 1],
+            "Normalized": ["ui-id-316", 1],
+            "Wimley-White": ["ui-id-317", 1]
+        },
+        "B-factor": {
+            "self": ["ui-id-318", 1],
+            "Original": ["ui-id-319", 1],
+            "Percentile": ["ui-id-320", 1]
+        },
+        "Accessibility": ["ui-id-321", 1],
+        "Chain": ["ui-id-322", 1],
+        "Residue": {
+            "self": ["ui-id-323", 1],
+            "Default": ["ui-id-324", 1],
+            "Custom": ["ui-id-325", 1]
+        },
+        "Atom": ["ui-id-326", 1],
+        "Confidence": ["ui-id-327", 1],
+        "Save Color": ["div0_mn4_clrSave", 1],
+        "Apply Saved Color": ["div0_mn4_clrApplySave", 1]
+    },
+    "\u00a0Analysis": {
+        "Seq. & Annotations ": ["div0_mn6_selectannotations", 1],
+        "Aligned Seq. ": ["div0_mn2_alignment", 1],
+        "2D Cartoon": {
+            "self": ["ui-id-329", 1],
+            "Chain Level": ["div0_2dctn_chain", 1],
+            "Domain Level": ["div0_2dctn_domain", 1],
+            "Helix/Sheet Level": ["div0_2dctn_secondary", 1]
+        },
+        "Defined Sets": ["div0_definedsets2", 1],
+        "-": ["ui-id-328", 1],
+        "Interactions": ["div0_mn6_hbondsYes", 1],
+        "Contact Map": ["div0_mn6_contactmap", 1],
+        "Bring to Front": {
+            "self": ["ui-id-330", 1],
+            "Interaction Table": ["div0_mn1_window_table", 1],
+            "2D Interaction Network": ["div0_mn1_window_linegraph", 1],
+            "2D Interaction Map": ["div0_mn1_window_scatterplot", 1],
+            "2D Graph(Force-Directed)": ["div0_mn1_window_graph", 1]
+        },
+        "Mutation ": ["div0_mn1_mutation", 1],
+        "DelPhi Potential ": ["div0_mn1_delphi", 1],
+        "Load PQR/Phi": {
+            "self": ["ui-id-331", 1],
+            "Local PQR/Phi/Cube File": ["div0_mn1_phi", 1],
+            "URL PQR/Phi/Cube File": ["div0_mn1_phiurl", 1]
+        },
+        "Download PQR": ["div0_delphipqr", 1],
+        "Distance": {
+            "self": ["ui-id-332", 1],
+            "between Two Atoms": ["ui-id-333", 1],
+            "between Two Sets": ["ui-id-334", 1],
+            "Hide": ["ui-id-335", 1]
+        },
+        "Surface Area": ["div0_mn6_area", 1],
+        "Label": {
+            "self": ["ui-id-336", 1],
+            "by Picking Atoms": ["ui-id-337", 1],
+            "per Selection": ["ui-id-338", 1],
+            "per Atom": ["ui-id-339", 1],
+            "per Residue": ["ui-id-340", 1],
+            "per Residue & Number": ["ui-id-341", 1],
+            "per Chain": ["ui-id-342", 1],
+            "N- & C-Termini": ["ui-id-343", 1],
+            "Remove": ["ui-id-344", 1]
+        },
+        "Label Scale": {
+            "self": ["ui-id-345", 1],
+            "0.2": ["ui-id-346", 1],
+            "0.4": ["ui-id-347", 1],
+            "0.6": ["ui-id-348", 1],
+            "0.8": ["ui-id-349", 1],
+            "1.0": ["ui-id-350", 1],
+            "2.0": ["ui-id-351", 1],
+            "3.0": ["ui-id-352", 1],
+            "4.0": ["ui-id-353", 1],
+            "5.0": ["ui-id-354", 1]
+        },
+        "Chem. Binding": {
+            "self": ["ui-id-355", 1],
+            "Show": ["ui-id-356", 1],
+            "Hide": ["ui-id-357", 1]
+        },
+        "Disulfide Bonds": {
+            "self": ["ui-id-358", 1],
+            "Show": ["ui-id-359", 1],
+            "Export Pairs": ["ui-id-360", 1],
+            "Hide": ["ui-id-361", 1]
+        },
+        "Cross-Linkages": {
+            "self": ["ui-id-362", 1],
+            "Show": ["ui-id-363", 1],
+            "Export Pairs": ["ui-id-364", 1],
+            "Hide": ["ui-id-365", 1]
+        },
+        "Symmetry": {
+            "self": ["ui-id-366", 1],
+            "from SymD(Dynamic) ": ["div0_mn6_symd", 1],
+            "Clear SymD Symmetry": ["div0_mn6_clear_sym", 1],
+            "Show Axes Only": ["div0_mn6_axes_only", 1]
+        },
+        "Window Title": ["div0_mn6_yournote", 1],
+        "Links": {
+            "self": ["ui-id-367", 1],
+            "Structure Summary ": ["div0_mn1_link_structure", 1],
+            "Similar Structures ": ["div0_mn1_link_vast", 1],
+            "Literature ": ["div0_mn1_link_pubmed", 1],
+            "Protein ": ["div0_mn1_link_protein", 1]
+        }
+    },
+    "Help": {
+        " 3.4.6": ["ui-id-369", 1],
+        "Live Gallery ": ["ui-id-370", 1],
+        "Tutorial": {
+            "self": ["ui-id-371", 1],
+            "Use iCn3D": ["ui-id-372", 1],
+            "iCn3D Videos": ["ui-id-373", 1],
+            "URL Parameters": ["ui-id-374", 1],
+            "Commands": ["ui-id-375", 1]
+        },
+        "Search Structure ": ["ui-id-376", 1],
+        "Citing iCn3D": ["ui-id-377", 1],
+        "Source Code": {
+            "self": ["ui-id-378", 1],
+            "GitHub (browser) ": ["ui-id-379", 1],
+            "npm (Node.js) ": ["ui-id-380", 1],
+            "Jupyter Notebook ": ["ui-id-381", 1]
+        },
+        "Develop": {
+            "self": ["ui-id-382", 1],
+            "How to Embed": ["ui-id-383", 1],
+            "Data Structure": ["ui-id-384", 1],
+            "Class Structure": ["ui-id-385", 1],
+            "Add New Classes": ["ui-id-386", 1],
+            "Modify Functions": ["ui-id-387", 1],
+            "RESTful APIs": ["ui-id-388", 1]
+        },
+        "Help Doc ": ["ui-id-389", 1],
+        "-": ["ui-id-368", 1],
+        "Transform Hints": {
+            "self": ["ui-id-390", 1],
+            "Rotate": {
+                "self": ["ui-id-391", 1],
+                "Left Mouse": [null, 1],
+                "Key l: Left": [null, 1],
+                "Key j: Right": [null, 1],
+                "Key i: Up": [null, 1],
+                "Key m: Down": [null, 1],
+                "Shift + Key l: Left 90\u00b0": [null, 1],
+                "Shift + Key j: Right 90\u00b0": [null, 1],
+                "Shift + Key i: Up 90\u00b0": [null, 1],
+                "Shift + Key m: Down 90\u00b0": [null, 1]
+            },
+            "Zoom": {
+                "self": ["ui-id-392", 1],
+                "Middle Mouse": [null, 1],
+                "Key z: Zoom in": [null, 1],
+                "Key x: Zoom out": [null, 1]
+            },
+            "Translate": {
+                "self": ["ui-id-393", 1],
+                "Right Mouse": [null, 1]
+            }
+        },
+        "Selection Hints": ["ui-id-394", 1]
+    }
+}
