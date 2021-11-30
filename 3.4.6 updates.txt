@@ -1,0 +1,43 @@
+After `(t += e.htmlCls.setHtmlCls.getLink("mn1_align", "Structure to Structure " + e.htmlCls.wifiStr)),`
+add (t += e.htmlCls.setHtmlCls.getLink("mn1_smith", "Local Sequence to Structure " + e.htmlCls.wifiStr)),
+
+After `e.myEventCls.onIds("#" + e.pre + "mn1_blast_rep_id", "click", function (t) {e.icn3d, e.htmlCls.dialogCls.openDlg("dl_blast_rep_id", "Align sequence to structure");}),`
+add `e.myEventCls.onIds("#"+e.pre+"mn1_smith","click",(function(t){e.icn3d,e.htmlCls.dialogCls.openDlg("dl_smith","Align sequence to structure")}))`
+
+After `(s += e.htmlCls.divStr + "dl_blast_rep_id' style='max-width:500px;' class='" + l + "'>"),
+       (s += "Enter a Sequence ID(or FASTA sequence) and the aligned Structure ID, which can be found using the <a href='https://blast.ncbi.nlm.nih.gov/Blast.cgi?PROGRAM=blastp&PAGE_TYPE=BlastSearch&DATABASE=pdb' target='_blank'>BLAST</a> search against the pdb database with the Sequence ID or FASTA sequence as input.<br><br> "),
+       (s += "<b>Sequence ID</b>(NCBI protein accession of a sequence): " + e.htmlCls.inputTextStr + "id='" + e.pre + "query_id' value='NP_001108451.1' size=8><br> "),
+       (s += "or FASTA sequence: <br><textarea id='" + e.pre + "query_fasta' rows='5' style='width: 100%; height: " + e.htmlCls.LOG_HEIGHT + "px; padding: 0px; border: 0px;'></textarea><br><br>"),
+       (s += "<b>Structure ID</b>(NCBI protein accession of a chain of a 3D structure): " + e.htmlCls.inputTextStr + "id='" + e.pre + "blast_rep_id' value='1TSR_A' size=8><br> "),
+       (s += e.htmlCls.buttonStr + "reload_blast_rep_id'>Load</button>"),
+       (s += "</div>"),`
+add `s+=e.htmlCls.divStr+"dl_smith' style='max-width:500px;' class='"+l+"'>",s+="Enter a FASTA sequence and the aligned Structure ID. Change parameters as needed.<br><br> ",s+="Match: "+e.htmlCls.inputTextStr+"id='"+e.pre+"smith_match' value='1' size=1> &emsp;", s+="Mismatch: "+e.htmlCls.inputTextStr+"id='"+e.pre+"smith_mismatch' value='-1' size=1> &emsp;", s+="Gap: "+e.htmlCls.inputTextStr+"id='"+e.pre+"gap' value='-1' size=1> &emsp;", s+="Extension: "+e.htmlCls.inputTextStr+"id='"+e.pre+"extension' value='-1' size=1>&emsp;", s+="Local: "+e.htmlCls.inputCheckStr+"id='"+e.pre+"local' checked size=1>&emsp;<br><br> ",s+="FASTA sequence: <br><textarea id='"+e.pre+"query_smith_fasta' rows='5' style='width: 100%; height: "+e.htmlCls.LOG_HEIGHT+"px; padding: 0px; border: 0px;'></textarea><br><br>",s+="<b>Structure ID</b>(Target chain for sequence alignment): "+e.htmlCls.inputTextStr+"id='"+e.pre+"smith_id' value='A' size=8><br><br> ",s+=e.htmlCls.buttonStr+"reload_smith'>Load</button>",s+="</div>",`
+
+After `e.myEventCls.onIds("#" + e.pre + "reload_blast_rep_id", "click", function (t) {
+                    e.icn3d, t.preventDefault(), e.cfg.notebook || dialog.dialog("close");
+                    let s = $("#" + e.pre + "query_id").val(),
+                        i = encodeURIComponent($("#" + e.pre + "query_fasta").val()),
+                        l = $("#" + e.pre + "blast_rep_id").val();
+                    e.htmlCls.clickMenuCls.setLogCmd("load seq_struct_ids " + s + "," + l, !1),
+                        (s = "" !== s && void 0 !== s ? s : i),
+                        window.open(
+                            e.htmlCls.baseUrl +
+                                "icn3d/full.html?from=icn3d&blast_rep_id=" +
+                                l +
+                                "&query_id=" +
+                                s +
+                                "&command=view annotations; set annotation cdd; set annotation site; set view detailed view; select chain " +
+                                l +
+                                "; show selection",
+                            "_blank"
+                        );
+                 ,`
+
+add `e.myEventCls.onIds("#"+e.pre+"reload_smith","click",(function(t){e.icn3d,t.preventDefault(),e.cfg.notebook||dialog.dialog("close");let i=encodeURIComponent($("#"+e.pre+"query_smith_fasta").val()),l=$("#"+e.pre+"smith_id").val(), m=$("#"+e.pre+"smith_match").val(), n=$("#"+e.pre+"smith_mismatch").val(), o=$("#"+e.pre+"gap").val(), p=$("#"+e.pre+"extension").val(), q=$("#"+e.pre+"local").val();e.htmlCls.clickMenuCls.setLogCmd("load seq_struct_ids "+l,!1),e.icn3d.showAnnoCls.showAnnotations(),e.icn3d.applyCommandCls.applyCommand("view annotations"),e.icn3d.annotationCls.setAnnoTabSite(),e.icn3d.applyCommandCls.applyCommand("set annotation site"),e.icn3d.annotationCls.setAnnoViewAndDisplay("detailed view"),e.icn3d.applyCommandCls.applyCommand("set view detailed view"),e.icn3d.selectionCls.selectAChain(l, l, !1),e.icn3d.applyCommandCls.applyCommand("select chain "+l),e.icn3d.selectionCls.showSelection(),e.icn3d.applyCommandCls.applyCommand("show selection"), do_align(fasta[l].join(""), i, m, n, o, p, q);}))`
+
+
+
+
+processSeqData(e)
+let h = "BLAST, E: " + a;
+t.showSeqCls.showSeq(i, l, void 0, e, h, d, c);

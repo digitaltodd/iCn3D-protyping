@@ -1,0 +1,399 @@
+<!DOCTYPE html><html lang="en"><head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+<meta name="description" content="iCn3D Structure Viewer">
+<meta name="keywords" content="NCBI, Structure, JavaScript, iCn3D, 3D, Viewer, WebGL, three.js, sequence, chemical">
+<meta name="robots" content="index,follow,noarchive">
+<meta name="ncbi_app" content="structure">
+<meta name="ncbi_pdid" content="icn3d">
+<meta name="ncbi_page" content="full">
+<meta name="ncbi_pinger_xml_http_request_override" content="false"/>
+<title>iCn3D: Web-based 3D Structure Viewer</title>
+<script type="text/javascript">
+    window.ncbi_startTime = new Date();
+</script>
+</head>
+<body>
+  <div id="div0"></div>
+
+  <link rel="stylesheet" href="lib/jquery-ui-1.12.1.min.css">
+  <link rel="stylesheet" href="icn3d_3.4.8.css">
+  <script src="lib/jquery-3.5.0.min.js"></script>
+  <script src="lib/jquery-ui-1.12.1.min.js"></script>
+  <script src="lib/three_0.128.0.min.js"></script>
+  <script src="icn3d_3.4.8.min.js"></script>
+  <script src="module/alignment.js"></script>
+  <script type="text/javascript">
+
+    $( document ).ready(function() {
+      if (navigator.userAgent.indexOf("MSIE ") > 0 || !!navigator.userAgent.match(/Trident.*rv\:11\./)) { // If Internet Explorer
+          // iCn3D version 2.24.7 doesn't work with three_0.128.0.min.js
+          //$.getScript('icn3d_full_ui_2.24.7.min.js', function() {
+          //  var version = 2;
+          //  launchIcn3d(version);
+          //});
+
+          var fixedUrl = document.URL.replace('full.html', 'full_2.24.7.html');
+          window.open(fixedUrl, '_self');
+
+          alert("IE does NOT work with the current iCn3D version 3. The old iCn3D version 2 is used instead.");
+      }
+      else {
+          //$.getScript('icn3d_3.4.8.min.js', function() {
+            var version = 3;
+            launchIcn3d(version);
+          //});
+      }
+      function launchIcn3d(version) {
+          var cfg = getConfig();
+          cfg.version = version;
+
+          if(cfg.mmtfid !== undefined) {
+              setupViewer('mmtfid', cfg.mmtfid, cfg);
+          }
+          else if(cfg.pdbid !== undefined) {
+              setupViewer('pdbid', cfg.pdbid, cfg);
+          }
+          else if(cfg.pdb_filepath !== undefined) {
+              cfg.divid = 'div0';
+
+              var e = new icn3d.iCn3DUI(cfg);
+              e.show3DStructure();
+              var s = e.icn3d;
+              var getFileBlob = function (url, cb) {
+                var xhr = new XMLHttpRequest();
+                xhr.open("GET", url);
+                //xhr.responseType = "blob";
+
+                xhr.onload = function () {
+                  if (xhr.status == 200){
+                    cb(xhr.response);
+                  } else {
+                    cb(null)
+                  }
+                }
+                  
+                xhr.send();
+              };
+
+              (async () => {
+                var i = null;
+                getFileBlob(cfg.pdb_filepath, function (fileObject) {
+                    i = fileObject;
+                }); 
+                while (!i){
+                  await new Promise(resolve => setTimeout(resolve, 100));
+                }
+
+                (s.bInitial = !0), e.cfg.notebook || dialog.dialog("close"), e.cfg.notebook ? s.resizeCanvasCls.closeDialogs() : $(".ui-dialog-content").dialog("close");
+                (s.molTitle = ""),
+                s.init(),
+                (s.bInputfile = !0),
+                (s.InputfileData = i);
+                (s.InputfileType = "pdb"),
+                s.pdbParserCls.loadPdbData(i);
+
+                setupStateFile(cfg, e)
+   
+                atoms = []
+                chains = {}
+                fasta = {}
+                codes = {'ALA':'A','CYS':'C','ASP':'D','GLU':'E','PHE':'F','GLY':'G','HIS':'H','ILE':'I','LYS':'K','LEU':'L','MET':'M','ASN':'N','PRO':'P','GLN':'Q','ARG':'R','SER':'S','THR':'T','VAL':'V','TRP':'W','TYR':'Y'}
+
+                var fileContentArray = i.split(/\r\n|\n/);
+                for(var line = 0; line < fileContentArray.length-1; line++){
+                  content = fileContentArray[line].replace(/\s\s+/g, ' ').split(' ');
+                  if (content[0] == "ATOM"){
+                    atoms.push(content)
+                  }
+                }
+                for(var atom = 0; atom < atoms.length; atom++){
+                  if (atoms[atom][4] in chains){
+                    chains[atoms[atom][4]].push(atoms[atom])
+                  } else{
+                    chains[atoms[atom][4]] = new Array();
+                    chains[atoms[atom][4]].push(atoms[atom])
+                  }
+                }
+                for (const [key, value] of Object.entries(chains)) {
+                  fasta[key] = new Array();
+                  for(var atom = 0; atom < value.length; atom ++){
+                    if (fasta[key].length < value[atom][5]){
+                      fasta[key].push(codes[value[atom][3]])
+                    }
+                  }
+                }
+              })();
+              setupMenu(cfg)
+              
+          }
+          else if(cfg.afid !== undefined) {
+              setupViewer('afid', cfg.afid, cfg);
+          }
+          else if(cfg.opmid !== undefined) {
+              setupViewer('opmid', cfg.opmid, cfg);
+          }
+          else if(cfg.cid !== undefined) {
+              setupViewer('cid', cfg.cid, cfg);
+          }
+          else if(cfg.mmcifid !== undefined) {
+              setupViewer('mmcifid', cfg.mmcifid, cfg);
+          }
+          else if(cfg.mmdbid !== undefined) {
+              setupViewer('mmdbid', cfg.mmdbid, cfg);
+          }
+          else if(cfg.gi !== undefined) {
+              setupViewer('gi', cfg.gi, cfg);
+          }
+          else if(cfg.uniprotid !== undefined) {
+              setupViewer('uniprotid', cfg.uniprotid, cfg);
+          }
+          else if(cfg.blast_rep_id !== undefined) {
+              if( (cfg.from === 'blast' || cfg.from === 'icn3d') && cfg.command == '') {
+                command = 'view+annotations;+set+annotation+cdd;+set+annotation+site;+set+view+detailed+view;+select+chain+'
+                  + cfg.blast_rep_id + ';+show+selection';
+              }
+
+              setupViewer('blast_rep_id', cfg.blast_rep_id, cfg);
+          }
+          else if(cfg.urlname !== undefined) {
+              var urlname = decodeURIComponent(cfg.urlname);
+
+              setupViewer('url', cfg.urltype + '|' + urlname, cfg);
+          }
+          // e.g., align=103701,1,4,68563,1,167 [mmdbid1,biounit,molecule,mmdbid2,biounit,molecule]
+          else if(cfg.align !== undefined) {
+              cfg.divid = 'div0';
+              //cfg.align = cfg.align;
+              //cfg.showalignseq = cfg.showalignseq;
+
+              var icn3dui = new icn3d.iCn3DUI(cfg);
+
+              icn3dui.show3DStructure();
+          }
+          else if(cfg.chainalign !== undefined) {
+              cfg.divid = 'div0';
+              //cfg.chainalign = cfg.chainalign;
+              //cfg.resnum = cfg.resnum;
+              //cfg.showalignseq = cfg.showalignseq;
+
+              var icn3dui = new icn3d.iCn3DUI(cfg);
+
+              icn3dui.show3DStructure();
+          }
+          else {
+              setupViewer('', '', cfg);
+          }
+      }
+
+            function setupMenu(cfg){
+        if (cfg.menuconfig !== undefined){
+            var menuConfigFile = new XMLHttpRequest();
+            menuConfigFile.open("GET", cfg.menuconfig)
+            menuConfigFile.onload = function(){
+                if (menuConfigFile.status == 200){
+                  var data = JSON.parse(menuConfigFile.response)
+                  Object.keys(data).forEach(key => {
+                    Object.keys(data[key]).forEach(sub_key =>{
+                      if (data[key][sub_key].self != undefined && data[key][sub_key].self[1] == 0){
+                        var a = data[key][sub_key].self[0]
+                        var pid = document.getElementById(a).parentNode
+                        pid.style.display = "none"
+                      } else if (Object.keys(data[key][sub_key]).length < 3 && data[key][sub_key][1] == 0){
+                        var a = data[key][sub_key][0]
+                        var pid = document.getElementById(a).parentNode
+                        pid.style.display = "none"
+                      } else {
+                        Object.keys(data[key][sub_key]).forEach(sub_sub_key => {
+                          if (data[key][sub_key][sub_sub_key].self != undefined && data[key][sub_key][sub_sub_key].self[1] == 0){
+                            var a = data[key][sub_key][sub_sub_key].self[0]
+                            var pid = document.getElementById(a).parentNode
+                            pid.style.display = "none"
+                          } else if (Object.keys(data[key][sub_key][sub_sub_key]).length < 3 && data[key][sub_key][sub_sub_key][1] == 0){
+                            if (data[key][sub_key][sub_sub_key][0] != null){
+                              var a = data[key][sub_key][sub_sub_key][0]
+                              var pid = document.getElementById(a).parentNode
+                              pid.style.display = "none"
+                            }
+                          }
+                        })
+                      }
+                    })
+                  });
+                } else {
+                    console.log("none")
+                }
+            }
+            menuConfigFile.send()
+        }
+      }
+
+      function setupStateFile(cfg, icn3dui){
+        if (cfg.statefile !== undefined){
+            var stateFile = new XMLHttpRequest();
+            stateFile.open("GET", cfg.statefile)
+            stateFile.onload = function(){
+                if (stateFile.status == 200){
+                    statefile = stateFile.responseText.split('\n')
+                    console.log(statefile)
+                    for (i = 0; i<statefile.length -1 ; i++){
+                        icn3dui.icn3d.applyCommandCls.applyCommand(statefile[i]);
+                    }
+                    icn3dui.icn3d.drawCls.draw()
+                } else {
+                    console.log("none")
+                }
+            } 
+            stateFile.send()
+        }
+      }
+
+      function setupViewer(idName, idValue, cfg) {
+        var maxStructure = 5; // show max 5 structures
+
+        var idArray = idValue.toString().replace(/\s/g, '').split(',');
+
+        if(idArray.length > 1) {
+          resize = false;
+
+          if(cfg.width && cfg.width.indexOf('%') != -1) {
+            cfg.width = 400;
+            cfg.height = 400;
+          }
+        }
+
+        for(var i = 0, il = idArray.length; i < il && i < maxStructure; ++i) {
+          cfg.divid = 'div' + i;
+
+          if(idName !== '') cfg[idName] = idArray[i];
+
+          var icn3dui = new icn3d.iCn3DUI(cfg);
+
+          $.when(icn3dui.show3DStructure()).then(function() {
+               setupStateFile(cfg, icn3dui)
+          });
+
+          if(idName === '') $("#div" + i + "_wait").hide();
+        }
+      }
+
+      function getConfig() {
+        // separating the GET parameters from the current URL
+        // repalce "color #" with "color " in the url
+        var url = document.URL.replace(/\#/g, '');
+
+        var bNopara = false;
+        var ampPos = url.indexOf("?");
+        if(ampPos === -1) {
+        //  alert("Please include '?pdbid=1GPK,2POR,...' in your url");
+            bNopara = true;
+        }
+
+        var params = url.split("?");
+        // transforming the GET parameters into a dictionnary
+        var search = params[params.length - 1];
+
+        var cfg = {};
+
+        if(!bNopara) {
+            var decodeSearch = decodeURIComponent(search);
+
+            // command could contains '&', for example when loading statefile 'load mmdb 1kq2 | parameters &atype=1'
+            var commandPos = decodeSearch.indexOf('&command=');
+            if(commandPos != -1) {
+                cfg.command = decodeSearch.substr(commandPos + 9); // ";" separated commands
+                decodeSearch = decodeSearch.substr(0, commandPos);
+
+                var paraPos = decodeSearch.indexOf(' | parameters ');
+
+                if(paraPos != -1) { //When loading statefile (e.g., 'load mmdb 1kq2 | parameters &atype=1'), the commands ends with '}}'.
+                    var tmpPos = cfg.command.indexOf('}}&');
+                    if(tmpPos != -1) { // more parameters after the command
+                      decodeSearch += cfg.command.substr(tmpPos + 2);
+                      cfg.command = cfg.command.substr(0, tmpPos + 2);
+                    }
+                }
+                else {
+                    var paraPos = cfg.command.indexOf(' | parameters ');
+
+                    if(paraPos != -1) { //"&command=load mmdb 7DDD | parameters &mmdbid=7DDD; select..." the commands ends with '}}'.
+                        var tmpPos = cfg.command.indexOf('}}&');
+                        if(tmpPos != -1) { // more parameters after the command
+                          decodeSearch += cfg.command.substr(tmpPos + 2);
+                          cfg.command = cfg.command.substr(0, tmpPos + 2);
+                        }
+                    }
+                    else {
+                        var tmpPos = cfg.command.indexOf('&');
+                        if(tmpPos != -1) {
+                          decodeSearch += cfg.command.substr(tmpPos);
+                          cfg.command = cfg.command.substr(0, tmpPos);
+                        }
+                    }
+                }
+            }
+            else {
+                cfg.command = '';
+            }
+
+            var hashes = decodeSearch.split('&');
+            for (var i = 0; i < hashes.length; i++) {
+                var hash = hashes[i].split('=');
+                cfg[hash[0].trim()] = (hash[1] !== undefined) ? hash[1].trim() : undefined;
+            }
+
+            // for mmdb structures, pass the parameters after the first "&" sign
+            cfg.inpara = "&" + url.substr(ampPos + 1);
+        }
+
+        // changed some parameter names
+        cfg.rid = cfg.RID;
+
+        cfg.urlname = cfg.url;
+        if(cfg.urlname && cfg.urlname.indexOf('%3A%2F%2F') === -1) { // decoded URL
+            // should encode it
+            cfg.urlname = encodeURIComponent(cfg.urlname);
+        }
+        cfg.urltype = (cfg.type === undefined) ? 'pdb' : cfg.type;
+
+        cfg.version = getValue(cfg.v);
+
+        if(cfg.version !== undefined && window.localStorage && localStorage.getItem('fixedversion')) {
+            var fixedUrl = url.replace('full.html', 'full_' + cfg.version + '.html');
+            window.open(fixedUrl, '_self');
+
+            localStorage.removeItem('fixedversion');
+        }
+
+        // standardize the input values
+        for(var i in cfg) {
+            cfg[i] = getValue(cfg[i]);
+        }
+
+        // backward compatible with showseq
+        cfg.showanno = cfg.showanno || cfg.showseq;
+
+        cfg.shownote = 1; //cfg.shownote;
+        cfg.options = (cfg.options !== undefined) ? JSON.parse(cfg.options) : undefined;
+
+        return cfg;
+      }
+
+      function getValue(input) {
+        if(input == 'true' || input == '1') {
+          input = true;
+        }
+        else if(input == 'false' || input == '0') {
+          input = false;
+        }
+
+        return input;
+      }
+    }); // document ready
+  </script>
+
+  <!-- log & Google Analytics -->
+  <script type="text/javascript" src="https://www.ncbi.nlm.nih.gov/core/pinger/pinger.js"></script>
+</body></html>
+
