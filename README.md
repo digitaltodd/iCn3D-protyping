@@ -6,7 +6,7 @@
   * In `icn3d_3.4.6.min.js` replace `setLogWindow()` method with: `setLogWindow(){let e=this.icn3dui;if(e.bNode)return"";let t="";return t+=e.htmlCls.divStr+"cmdlog' style='float:left; margin-top: 5px; width: 100%;'>",t+="<textarea id='"+e.pre+"logtext' rows='2' style='width: 100%; height: "+e.htmlCls.CMD_HEIGHT+"px; margin: auto; padding: 5px; box-sizing: border-box; border: 4px inset orange; background-color: "+e.htmlCls.GREYD+";'></textarea>",t+="</div>",t}`
   * In `icn3d_3.4.6.min.js` change `this.LogHeight=65` to `this.LOG_HEIGHT=180`
   * Replace `index.html` with the one with additional methods (pdb_file, menu_parse, statefile)
-  * Follow steps in `3.4.6 updates.text`
+  * Follow steps in `3.4.6 updates.txt`
 
 ## [Gallery with live examples](https://www.ncbi.nlm.nih.gov/Structure/icn3d/icn3d.html#gallery), [Tutorial](https://www.ncbi.nlm.nih.gov/Structure/icn3d/icn3d.html#videos)
 
