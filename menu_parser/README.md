@@ -20,6 +20,15 @@ Head over to [Python.org](https://www.python.org/) to download the latest versio
   * Make sure that The version of Chrome matches the version of the webdriver otherwise you will get an error
   * On Mac OS you may get a "chromedriver” cannot be opened because the developer cannot be verified. Unable to launch the chrome browser" error. To fix run: `xattr -d com.apple.quarantine /$PATH/chromedriver` 
   * In my case this was `xattr -d com.apple.quarantine /Users/todd/bin/chromedriver`
+ 
+## Running
+Add the script to the directory with the web files
+First need an http server running, NPM http-server is best
+> http-server &
+hit return to get the commmand line
+then run menuparser.py
+> python menuparser.py
+
 
 ## Built With
 * Python
