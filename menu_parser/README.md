@@ -16,6 +16,7 @@ Head over to [Python.org](https://www.python.org/) to download the latest versio
 * To install bs4 - run `pip3 isntall bs4`
 * From `https://chromedriver.chromium.org/downloads` install the current version of Chrome you have on your computer
 * If you don't have Chrome - `https://www.google.com/chrome/`
+  * On macs install in a path that is in your enviroment - eg. /usr/bin, /usr/local/bin or Users/username/bin (if in ENV PATH)
   * Make sure that The version of Chrome matches the version of the webdriver otherwise you will get an error
   * On Mac OS you may get a "chromedriver” cannot be opened because the developer cannot be verified. Unable to launch the chrome browser" error. To fix run: `xattr -d com.apple.quarantine /$PATH/chromedriver` 
   * In my case this was `xattr -d com.apple.quarantine /Users/todd/bin/chromedriver`
