@@ -24,10 +24,10 @@ Head over to [Python.org](https://www.python.org/) to download the latest versio
 ## Running
 Add the script to the directory with the web files
 First need an http server running, NPM http-server is best
-> http-server &
+http-server &
 hit return to get the commmand line
 then run menuparser.py
-> python menuparser.py
+python menuparser.py
 
 
 ## Built With
