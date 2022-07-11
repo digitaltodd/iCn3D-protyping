@@ -30,7 +30,7 @@ hit return to get the commmand line <br>
 then run menuparser.py<br>
 > `python menuparser.py`
 > 
-
+Besure to cleanup the running server: `ps followed by kill id` or `fg  and ^c` to kill the process.
 
 ## Built With
 * Python
