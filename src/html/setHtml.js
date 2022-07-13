@@ -93,6 +93,51 @@ class SetHtml {
         return html;
     }
 
+    setAdvanced2(index) { let me = this.icn3dui, ic = me.icn3d;
+        let indexStr =(index === undefined) ? '' : index;
+
+        let dialogClass =(me.cfg.notebook) ? 'icn3d-hidden' : '';
+        let html = me.htmlCls.divStr + "dl_advanced2" + indexStr + "' class='" + dialogClass + "'>";
+
+        html += "<table width='500'><tr><td valign='top'><table cellspacing='0'>";
+        html += "<tr><td><b>Select:</b></td><td>" + me.htmlCls.inputTextStr + "id='" + me.pre + "command2" + indexStr + "' placeholder='$[structures].[chains]:[residues]@[atoms]' size='60'></td></tr>";
+        html += "<tr><td><b>Name:</b></td><td>" + me.htmlCls.inputTextStr + "id='" + me.pre + "command_name2" + indexStr + "' placeholder='my_selection' size='60'></td></tr>";
+        html += "<tr><td colspan='2' align='left'>" + me.htmlCls.space3 + me.htmlCls.buttonStr + "command_apply2" + indexStr + "'><b>Save Selection to Defined Sets</b></button></td></tr>";
+        html += "</table></td>";
+
+        html += "</tr>";
+
+        html += "<tr><td>";
+
+        html += 'Specification Tips: <div style="width:20px; margin-top:6px; display:inline-block;"><span id="' + me.pre + 'specguide2' + indexStr + '_expand" class="ui-icon ui-icon-plus icn3d-expand icn3d-link" style="width:15px;" title="Expand"></span><span id="' + me.pre + 'specguide' + indexStr + '_shrink" class="ui-icon ui-icon-minus icn3d-shrink icn3d-link" style="display:none; width:15px;" title="Shrink"></span></div><br>';
+
+        html += me.htmlCls.divStr + "specguide2" + indexStr + "' style='display:none; width:500px' class='icn3d-box'>";
+
+        html += "<b>Specification:</b> In the selection \"$1HHO,4N7N.A,B,C:5-10,LV,3AlaVal,chemicals@CA,C\":";
+        html += "<ul><li>\"$1HHO,4N7N\" uses \"$\" to indicate structure selection.<br/>";
+        html += "<li>\".A,B,C\" uses \".\" to indicate chain selection.<br/>";
+        html += "<li>\":5-10,LV,3LeuVal,chemicals\" uses the colon \":\" to indicate residue selection. Residue selection could be residue number(5-10), one-letter IUPAC residue name abbreviations(LV), three-letter residue names(AlaVal, \"3\" indicates each residue name has three letters), or predefined names: \"proteins\", \"nucleotides\", \"chemicals\", \"ions\", and \"water\". IUPAC abbreviations can be written either as a contiguous string(e.g., \":LV\"), in order to find all instances of that sequence in the structure, or they can be separated by commas(e.g., \":L,V\") to select all residues of a given type in the structure(in the latter case, select all Leucine and Valine in the structure).<br/>";
+        html += "<li>\"@CA,C\" uses \"@\" to indicate atom selection.<br/>";
+        html += "<li>Partial definition is allowed, e.g., \":1-10\" selects all residue IDs 1-10 in all chains.<br/>";
+        html += "<li>Different selections can be unioned(with \"<b>or</b>\", default), intersected(with \"<b>and</b>\"), or negated(with \"<b>not</b>\"). For example, \":1-10 or :K\" selects all residues 1-10 and all Lys residues. \":1-10 and :K\" selects all Lys residues in the range of residue number 1-10. \":1-10 or not :K\" selects all residues 1-10, which are not Lys residues.<br/>";
+        html += "<li>The wild card character \"X\" or \"x\" can be used to represent any character.";
+        html += "</ul>";
+        html += "<b>Set Operation:</b>";
+        html += "<ul><li>Users can select multiple sets in the menu \"Select > Defined Sets\".<br/>";
+        html += "<li>Different sets can be unioned(with \"<b>or</b>\", default), intersected(with \"<b>and</b>\"), or negated(with \"<b>not</b>\"). For example, if the \"Defined Sets\" menu has four sets \":1-10\", \":11-20\", \":5-15\", and \":7-8\", the command \"saved atoms :1-10 or :11-20 and :5-15 not :7-8\" unions all residues 1-10 and 11-20 to get the residues 1-20, then intersects with the residues 5-15 to get the residues 5-15, then exclude the residues 7-8 to get the final residues 5-6 and 9-15.</ul>";
+        html += "<b>Full commands in url or command window:</b>";
+        html += "<ul><li>Select without saving the set: select $1HHO,4N7N.A,B,C:5-10,LV,chemicals@CA,C<br/>";
+        //html += "<li>Select and save: select $1HHO,4N7N.A,B,C:5-10,LV,chemicals@CA,C | name my_name | description my_description</ul>";
+        html += "<li>Select and save: select $1HHO,4N7N.A,B,C:5-10,LV,chemicals@CA,C | name my_name</ul>";
+
+        html += "</div>";
+
+        html += "</td></tr></table>";
+        html += "</div>";
+
+        return html;
+    }
+
     getOptionHtml(optArray, selIndex) { let me = this.icn3dui, ic = me.icn3d;
         let html = '';
 

@@ -1408,6 +1408,7 @@ class SetMenu {
             html += "</li>";
 
             html += me.htmlCls.setHtmlCls.getLink('definedsets2', 'Defined Sets');
+            html += me.htmlCls.setHtmlCls.getLink('mn_legend', 'Legend');
 
             html += "<li>-</li>";
 

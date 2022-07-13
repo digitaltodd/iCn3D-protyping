@@ -13,6 +13,7 @@ import {ResizeCanvas} from '../icn3d/transform/resizeCanvas.js';
 import {Draw} from '../icn3d/display/draw.js';
 import {ApplyCenter} from '../icn3d/display/applyCenter.js';
 import {DefinedSets} from '../icn3d/selection/definedSets.js';
+import { Legend } from '../icn3d/selection/legend.js';
 import {Selection} from '../icn3d/selection/selection.js';
 import {LoadScript} from '../icn3d/selection/loadScript.js';
 import {SelectByCommand} from '../icn3d/selection/selectByCommand.js';
@@ -121,6 +122,7 @@ class Events {
 
            if(bAppend) {
                if(ic.bSetChainsAdvancedMenu) ic.definedSetsCls.showSets();
+               if(ic.bSetChainsAdvancedMenu) ic.legendCls.showSets();
                if(ic.bAnnoShown) ic.showAnnoCls.showAnnotations();
            }
          }
@@ -153,6 +155,8 @@ class Events {
         ic.definedSetsCls.clickCustomAtoms();
         ic.definedSetsCls.clickCommand_apply();
         ic.definedSetsCls.clickModeswitch();
+
+        ic.legendCls.clickModeswitch();
 
         ic.selectionCls.clickShow_selected();
         ic.selectionCls.clickHide_selected();
@@ -329,6 +333,15 @@ class Events {
     //    },
 
     // other
+        me.myEventCls.onIds("#" + "legend_button", "click", function(e) {
+            e.preventDefault();
+            console.log(e)
+            console.log("here")
+            const elems = document.getElementsByClassName("legend_bullets_" + i)
+            for (let i = 0; i < elems.length; i++) {
+                elems[i].style.display = "none";
+            }
+        });
     //    clickViewswitch: function() {
         me.myEventCls.onIds("#" + me.pre + "anno_summary", "click", function(e) { let ic = me.icn3d;
             e.preventDefault();

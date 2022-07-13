@@ -14341,10 +14341,10 @@ var icn3d = (function (exports) {
               let  color =(atom !== undefined && atom.color !== undefined) ? colorStr : '000000';
 
               if(commandnameArray.indexOf(name) != -1) {
-                html += "<option value='" + name + "' style='color:#" + color + "' selected='selected'>" + name + "</option>";
+                html += "<label value='" + name + "' style='color:#" + color + "' selected='selected'>" + name + "</label>";
               }
               else {
-                html += "<option value='" + name + "' style='color:#" + color + "'>" + name + "</option>";
+                html += "<label value='" + name + "' style='color:#" + color + "'>" + name + "</label>";
               }
           }
 
@@ -40576,10 +40576,16 @@ var icn3d = (function (exports) {
             if(commandnameArray === undefined) commandnameArray = [];
 
             let definedAtomsHtml = ic.definedSetsCls.setAtomMenu(commandnameArray);
+            let legendAtomsHtml = ic.legendCls.setAtomMenu(commandnameArray);
 
             if($("#" + ic.pre + "atomsCustom").length) {
                 $("#" + ic.pre + "atomsCustom").html(definedAtomsHtml);
                 $("#" + ic.pre + "atomsCustom")[0].blur();
+            }
+
+            if($("#" + ic.pre + "atomsCustom2").length) {
+                $("#" + ic.pre + "atomsCustom2").html(legendAtomsHtml);
+                $("#" + ic.pre + "atomsCustom2")[0].blur();
             }
         }
 
@@ -46717,6 +46723,21 @@ var icn3d = (function (exports) {
             me.myEventCls.onIds("#" + me.pre + "setNot", "click", function(e) { let ic = me.icn3d;
                ic.setOperation = 'not';
             });
+
+            me.myEventCls.onIds("#" + me.pre + "mn_legend", "click", function(e) { let ic = me.icn3d;
+                ic.legendCls.showSets();
+                thisClass.setLogCmd('legend', true);
+             });
+
+             me.myEventCls.onIds("#" + "legend_button", "click", function(e) {
+                console.log(e);
+                console.log("here");
+                const elems = document.getElementsByClassName("legend_bullets_" + i);
+                for (let i = 0; i < elems.length; i++) {
+                    elems[i].style.display = "none";
+                }
+             });
+             
         //    },
         //    clkMn2_pkNo: function() {
             me.myEventCls.onIds("#" + me.pre + "mn2_pkNo", "click", function(e) { let ic = me.icn3d;
@@ -49544,6 +49565,7 @@ var icn3d = (function (exports) {
                 html += "</li>";
 
                 html += me.htmlCls.setHtmlCls.getLink('definedsets2', 'Defined Sets');
+                html += me.htmlCls.setHtmlCls.getLink('mn_legend', 'Legend');
 
                 html += "<li>-</li>";
 
@@ -49927,10 +49949,12 @@ var icn3d = (function (exports) {
             let bTwoddgmInit = $('#' + me.pre + 'dl_2ddgm').hasClass('ui-dialog-content'); // initialized
             let bTwodctnInit = $('#' + me.pre + 'dl_2dctn').hasClass('ui-dialog-content'); // initialized
             let bSetsInit = $('#' + me.pre + 'dl_definedsets').hasClass('ui-dialog-content'); // initialized
+            let bLegendInit = $('#' + me.pre + 'dl_legend').hasClass('ui-dialog-content'); // initialized
 
             status.bSelectannotationsInit2 = false, status.bGraph2 = false, status.bLineGraph2 = false;
             status.bScatterplot2 = false, status.bTable2 = false, status.bAlignmentInit2 = false;
             status.bTwoddgmInit2 = false, status.bTwodctnInit2 = false, status.bSetsInit2 = false;
+            status.bLegendInit2 = false;
 
             if(bSelectannotationsInit) status.bSelectannotationsInit2 = $('#' + me.pre + 'dl_selectannotations').dialog( 'isOpen' );
             if(bGraph) status.bGraph2 = $('#' + me.pre + 'dl_graph').dialog( 'isOpen' );
@@ -49943,6 +49967,7 @@ var icn3d = (function (exports) {
             if(bTwoddgmInit) status.bTwoddgmInit2 = $('#' + me.pre + 'dl_2ddgm').dialog( 'isOpen' );
             if(bTwodctnInit) status.bTwodctnInit2 = $('#' + me.pre + 'dl_2dctn').dialog( 'isOpen' );
             if(bSetsInit) status.bSetsInit2 = $('#' + me.pre + 'dl_definedsets').dialog( 'isOpen' );
+            if(bLegendInit) status.bLegendInit2 = $('#' + me.pre + 'dl_legend').dialog( 'isOpen' );
 
             return status;
         }
@@ -49991,7 +50016,7 @@ var icn3d = (function (exports) {
                     ||(id === me.pre + 'dl_contactmap' &&(!status.bSelectannotationsInit2) && !status.bGraph2 && !status.bAlignmentInit2 && !status.bTable2 && !status.bLineGraph2 && !status.bScatterplot2 && !status.bAlignerrormap2)
                     ||(id === me.pre + 'dl_alignerrormap' &&(!status.bSelectannotationsInit2) && !status.bGraph2 && !status.bAlignmentInit2 && !status.bTable2 && !status.bLineGraph2 && !status.bScatterplot2 && !status.bContactmap2)
                     ) {
-                      if(status.bTwoddgmInit2 || status.bTwodctnInit2 || status.bSetsInit2) {
+                      if(status.bTwoddgmInit2 || status.bTwodctnInit2 || status.bSetsInit2 || status.bLegendInit2) {
                           //ic.resizeCanvasCls.resizeCanvas(me.htmlCls.WIDTH - me.htmlCls.LESSWIDTH - twoddgmWidth, me.htmlCls.HEIGHT - me.htmlCls.LESSHEIGHT - me.htmlCls.EXTRAHEIGHT, true);
                           let canvasWidth = me.utilsCls.isMobile() ? me.htmlCls.WIDTH : me.htmlCls.WIDTH - twoddgmWidth;
                           ic.resizeCanvasCls.resizeCanvas(canvasWidth, me.htmlCls.HEIGHT, true);
@@ -49999,6 +50024,7 @@ var icn3d = (function (exports) {
                           if(status.bTwoddgmInit2) thisClass.openDlg2Ddgm(me.pre + 'dl_2ddgm', undefined, status.bSetsInit2);
                           if(status.bTwodctnInit2) thisClass.openDlg2Ddgm(me.pre + 'dl_2dctn', undefined, status.bSetsInit2);
                           if(status.bSetsInit2) thisClass.openDlg2Ddgm(me.pre + 'dl_definedsets');
+                          if(status.bLegendInit2) thisClass.openDlg2Ddgm(me.pre + 'dl_legend', undefined, status.bLegendInit2);
                       }
                       else {
                           //ic.resizeCanvasCls.resizeCanvas(me.htmlCls.WIDTH - me.htmlCls.LESSWIDTH, me.htmlCls.HEIGHT - me.htmlCls.LESSHEIGHT - me.htmlCls.EXTRAHEIGHT, true);
@@ -50071,6 +50097,10 @@ var icn3d = (function (exports) {
                 }
 
                 title = (id === me.pre + 'dl_2ddgm') ? '2D Diagram' : '2D Cartoon';
+            }
+            else if (id === me.pre + 'dl_legend'){
+                at = "right top";
+                title = 'Legend';
             }
 
             //var position ={ my: "left top", at: at, of: "#" + me.pre + "canvas", collision: "none" }
@@ -50146,12 +50176,13 @@ var icn3d = (function (exports) {
                 if(me.htmlCls.WIDTH >= me.htmlCls.HEIGHT) {
                     this.openDlgHalfWindow(id, title, dialogWidth, true);
 
-                    if(status.bTwoddgmInit2 || status.bTwodctnInit2 || status.bSetsInit2) {
+                    if(status.bTwoddgmInit2 || status.bTwodctnInit2 || status.bSetsInit2 || status.bLegendInit2) {
                         ic.resizeCanvasCls.resizeCanvas(me.htmlCls.WIDTH - dialogWidth - twoddgmWidth, me.htmlCls.HEIGHT, true);
 
                         if(status.bTwoddgmInit2) this.openDlg2Ddgm(me.pre + 'dl_2ddgm', undefined, status.bSetsInit2);
                         if(status.bTwodctnInit2) this.openDlg2Ddgm(me.pre + 'dl_2dctn', undefined, status.bSetsInit2);
                         if(status.bSetsInit2) this.openDlg2Ddgm(me.pre + 'dl_definedsets');
+                        if(status.bLegendInit2) this.openDlg2Ddgm(me.pre + 'dl_legend', undefined, status.bLegendInit2);
                     }
                 }
                 else {
@@ -50183,13 +50214,14 @@ var icn3d = (function (exports) {
                             ||(id === me.pre + 'dl_contactmap' &&(!status.bSelectannotationsInit2) &&(!status.bGraph2) &&(!status.bAlignmentInit2) &&(!status.bTable2) &&(!status.bLineGraph2) &&(!status.bScatterplot2) &&(!status.bAlignerrormap2))
                             ||(id === me.pre + 'dl_alignerrormap' &&(!status.bSelectannotationsInit2) &&(!status.bGraph2) &&(!status.bAlignmentInit2) &&(!status.bTable2) &&(!status.bLineGraph2) &&(!status.bScatterplot2) &&(!status.bContactmap2))
                             ) {
-                              if(status.bTwoddgmInit2 || status.bTwodctnInit2 || status.bSetsInit2) {
+                              if(status.bTwoddgmInit2 || status.bTwodctnInit2 || status.bSetsInit2 || status.bLegendInit2) {
                                   let canvasWidth = me.utilsCls.isMobile() ? me.htmlCls.WIDTH : me.htmlCls.WIDTH - twoddgmWidth;
                                   ic.resizeCanvasCls.resizeCanvas(canvasWidth, me.htmlCls.HEIGHT, true);
 
                                   if(status.bTwoddgmInit2) thisClass.openDlg2Ddgm(me.pre + 'dl_2ddgm', undefined, status.bSetsInit2);
                                   if(status.bTwodctnInit2) thisClass.openDlg2Ddgm(me.pre + 'dl_2dctn', undefined, status.bSetsInit2);
                                   if(status.bSetsInit2) thisClass.openDlg2Ddgm(me.pre + 'dl_definedsets');
+                                  if(status.bLegendInit2) this.openDlg2Ddgm(me.pre + 'dl_legend', undefined, status.bLegendInit2);
                               }
                               else {
                                   //ic.resizeCanvasCls.resizeCanvas(me.htmlCls.WIDTH - me.htmlCls.LESSWIDTH, me.htmlCls.HEIGHT - me.htmlCls.LESSHEIGHT - me.htmlCls.EXTRAHEIGHT, true);
@@ -50277,7 +50309,7 @@ var icn3d = (function (exports) {
 
                 let position;
 
-                if(id === me.pre + 'dl_definedsets') {
+                if(id === me.pre + 'dl_definedsets' || id === me.pre + 'dl_legend') {
                     let tmpWidth = 0;
 
                     //if(me.htmlCls.WIDTH - me.htmlCls.LESSWIDTH >= me.htmlCls.HEIGHT - me.htmlCls.LESSHEIGHT - me.htmlCls.EXTRAHEIGHT) {
@@ -50410,7 +50442,7 @@ var icn3d = (function (exports) {
                 if(id === me.pre + 'dl_addtrack') {
                     width='50%';
                 }
-                else if(id === me.pre + 'dl_2ddgm' || id === me.pre + 'dl_2dctn' || id === me.pre + 'dl_definedsets') {
+                else if(id === me.pre + 'dl_2ddgm' || id === me.pre + 'dl_2dctn' || id === me.pre + 'dl_definedsets' || id === me.pre + 'dl_legend') {
                     width=twoddgmWidth;
                 }
                 else if(id === me.pre + 'dl_allinteraction' || id === me.pre + 'dl_buriedarea') {
@@ -50517,6 +50549,14 @@ var icn3d = (function (exports) {
             html += "</div>";
 
             html += me.htmlCls.setHtmlCls.setAdvanced(2);
+
+            html += me.htmlCls.divStr + "dl_legend' class='" + dialogClass + "'>";
+            html += me.htmlCls.divStr + "dl_legendmenu2'>";
+            html += "<b>Legend:</b> <br/>";
+            html += "<div id='" + me.pre + "atomsCustom2' multiple size='6' style='min-width:130px;'>";
+            html += "</div>";
+            html += "</div>";
+            html += "</div>";
 
             html += me.htmlCls.divStr + "dl_mmtfid' class='" + dialogClass + "'>";
             html += "MMTF ID: " + me.htmlCls.inputTextStr + "id='" + me.pre + "mmtfid' value='1TUP' size=8> ";
@@ -51417,6 +51457,693 @@ var icn3d = (function (exports) {
      * @author Jiyao Wang <wangjiy@ncbi.nlm.nih.gov> / https://github.com/ncbi/icn3d
      */
 
+    class Legend {
+        constructor(icn3d) {
+            this.icn3d = icn3d;
+        }
+
+        setProtNuclLigInMenu() { let ic = this.icn3d; ic.icn3dui;
+            // Initially, add proteins, nucleotides, chemicals, ions, water into the menu "custom selections"
+            if(Object.keys(ic.proteins).length > 0) {
+              //ic.defNames2Atoms['proteins'] = Object.keys(ic.proteins);
+              ic.defNames2Residues['proteins'] = Object.keys(ic.firstAtomObjCls.getResiduesFromAtoms(ic.proteins));
+              ic.defNames2Descr['proteins'] = 'proteins';
+              ic.defNames2Command['proteins'] = 'select :proteins';
+            }
+
+            if(Object.keys(ic.nucleotides).length > 0) {
+              //ic.defNames2Atoms['nucleotides'] = Object.keys(ic.nucleotides);
+              ic.defNames2Residues['nucleotides'] = Object.keys(ic.firstAtomObjCls.getResiduesFromAtoms(ic.nucleotides));
+              ic.defNames2Descr['nucleotides'] = 'nucleotides';
+              ic.defNames2Command['nucleotides'] = 'select :nucleotides';
+            }
+
+            if(Object.keys(ic.chemicals).length > 0) {
+              //ic.defNames2Atoms['chemicals'] = Object.keys(ic.chemicals);
+              if(ic.bOpm) {
+                  let  chemicalResHash = {}, memResHash = {};
+                  for(let serial in ic.chemicals) {
+                      let  atom = ic.atoms[serial];
+                      let  residueid = atom.structure + '_' + atom.chain + '_' + atom.resi;
+                      if(atom.resn === 'DUM') {
+                          memResHash[residueid] = 1;
+                      }
+                      else {
+                          chemicalResHash[residueid] = 1;
+                      }
+                  }
+
+                  if(Object.keys(chemicalResHash).length > 0) {
+                      ic.defNames2Residues['chemicals'] = Object.keys(chemicalResHash);
+                      ic.defNames2Descr['chemicals'] = 'chemicals';
+                      ic.defNames2Command['chemicals'] = 'select :chemicals';
+                  }
+
+                  if(Object.keys(memResHash).length > 0) {
+                      ic.defNames2Residues['membrane'] = Object.keys(memResHash);
+                      ic.defNames2Descr['membrane'] = 'membrane';
+                      ic.defNames2Command['membrane'] = 'select :membrane';
+                  }
+              }
+              else {
+                  ic.defNames2Residues['chemicals'] = Object.keys(ic.firstAtomObjCls.getResiduesFromAtoms(ic.chemicals));
+                  ic.defNames2Descr['chemicals'] = 'chemicals';
+                  ic.defNames2Command['chemicals'] = 'select :chemicals';
+              }
+            }
+
+            if(Object.keys(ic.ions).length > 0) {
+              //ic.defNames2Atoms['ions'] = Object.keys(ic.ions);
+              ic.defNames2Residues['ions'] = Object.keys(ic.firstAtomObjCls.getResiduesFromAtoms(ic.ions));
+              ic.defNames2Descr['ions'] = 'ions';
+              ic.defNames2Command['ions'] = 'select :ions';
+            }
+
+            if(Object.keys(ic.water).length > 0) {
+              //ic.defNames2Atoms['water'] = Object.keys(ic.water);
+              ic.defNames2Residues['water'] = Object.keys(ic.firstAtomObjCls.getResiduesFromAtoms(ic.water));
+              ic.defNames2Descr['water'] = 'water';
+              ic.defNames2Command['water'] = 'select :water';
+            }
+
+            this.setTransmemInMenu(ic.halfBilayerSize, -ic.halfBilayerSize);
+        }
+
+        setPredefinedInMenu() { let  ic = this.icn3d, me = ic.icn3dui;
+              // predefined sets: all chains
+              this.setChainsInMenu();
+
+              // predefined sets: proteins,nucleotides, chemicals
+              this.setProtNuclLigInMenu();
+
+              // show 3d domains for mmdbid
+              if(me.cfg.mmdbid !== undefined || me.cfg.gi !== undefined || me.cfg.chainalign !== undefined) {
+                  for(let tddomainName in ic.tddomains) {
+                      ic.selectionCls.selectResidueList(ic.tddomains[tddomainName], tddomainName, tddomainName, false, false);
+                  }
+              }
+
+              //if((me.cfg.align !== undefined || me.cfg.chainalign !== undefined) && ic.bFullUi) {
+              // deal with multiple chain align separately
+              if((me.cfg.align !== undefined ||(me.cfg.chainalign !== undefined && ic.chainidArray.length == 2) ) && ic.bFullUi) {
+                ic.selectionCls.selectResidueList(ic.consHash1, ic.conservedName1, ic.conservedName1, false, false);
+                ic.selectionCls.selectResidueList(ic.consHash2, ic.conservedName2, ic.conservedName2, false, false);
+
+                ic.selectionCls.selectResidueList(ic.nconsHash1, ic.nonConservedName1, ic.nonConservedName1, false, false);
+                ic.selectionCls.selectResidueList(ic.nconsHash2, ic.nonConservedName2, ic.nonConservedName2, false, false);
+
+                ic.selectionCls.selectResidueList(ic.nalignHash1, ic.notAlignedName1, ic.notAlignedName1, false, false);
+                ic.selectionCls.selectResidueList(ic.nalignHash2, ic.notAlignedName2, ic.notAlignedName2, false, false);
+
+                // for alignment, show aligned residues, chemicals, and ions
+                let  dAtoms = {};
+                for(let alignChain in ic.alnChains) {
+                    dAtoms = me.hashUtilsCls.unionHash(dAtoms, ic.alnChains[alignChain]);
+                }
+
+                let  residuesHash = {}, chains = {};
+                for(let i in dAtoms) {
+                    let  atom = ic.atoms[i];
+
+                    let  chainid = atom.structure + '_' + atom.chain;
+                    let  resid = chainid + '_' + atom.resi;
+                    residuesHash[resid] = 1;
+                    chains[chainid] = 1;
+                }
+
+                let  commandname = 'protein_aligned';
+                let  commanddescr = 'aligned protein and nucleotides';
+                let  select = "select " + ic.resid2specCls.residueids2spec(Object.keys(residuesHash));
+
+                //ic.selectionCls.addCustomSelection(Object.keys(residuesHash), Object.keys(dAtoms), commandname, commanddescr, select, true);
+                ic.selectionCls.addCustomSelection(Object.keys(residuesHash), commandname, commanddescr, select, true);
+              }
+        }
+
+        //Set the menu of defined sets with an array of defined names "commandnameArray".
+        setAtomMenu(commandnameArray) { let ic = this.icn3d; ic.icn3dui;
+          let  html = "";
+
+          let  nameArray1 =(ic.defNames2Residues !== undefined) ? Object.keys(ic.defNames2Residues) : [];
+          let  nameArray2 =(ic.defNames2Atoms !== undefined) ? Object.keys(ic.defNames2Atoms) : [];
+
+          let  nameArrayTmp = nameArray1.concat(nameArray2).sort();
+
+          let  nameArray = [];
+        //  $.each(nameArrayTmp, function(i, el){
+        //       if($.inArray(el, nameArray) === -1) nameArray.push(el);
+        //  });
+          nameArrayTmp.forEach(elem => {
+               if($.inArray(elem, nameArray) === -1) nameArray.push(elem);
+          });
+
+          console.log(nameArray);
+          
+
+          //for(let i in ic.defNames2Atoms) {
+          for(let i = 0, il = nameArray.length; i < il; ++i) {
+              let  name = nameArray[i];
+              let  atom, atomHash;
+
+              if(ic.defNames2Atoms !== undefined && ic.defNames2Atoms.hasOwnProperty(name)) {
+                  let  atomArray = ic.defNames2Atoms[name];
+
+                  if(atomArray.length > 0) atom = ic.atoms[atomArray[0]];
+              }
+
+              else if(ic.defNames2Residues !== undefined && ic.defNames2Residues.hasOwnProperty(name)) {
+                  let residueArray = ic.defNames2Residues[name];
+                  let elemSet = {};
+                  if(residueArray.length > 0) {
+                      atomHash = ic.residues[residueArray[0]];
+                      if(atomHash) {
+                          atom = ic.atoms[Object.keys(atomHash)[0]];
+                      }
+                  }
+                  
+                  for(let i = 0; i < residueArray.length; i++){
+                    atomHash = ic.residues[residueArray[i]];
+                    if(atomHash) {
+                        for (let j = 0; j < Object.keys(atomHash).length; j++){
+                            atom = ic.atoms[Object.keys(atomHash)[j]];
+                            let temp = (atom === undefined || atom.color === undefined || atom.color.getHexString().toUpperCase() === 'FFFFFF') ? 'DDDDDD' : atom.color.getHexString();
+                            if (elemSet[atom.elem] === undefined){
+                                elemSet[atom.elem] = [];
+                            }
+                            if (!elemSet[atom.elem].includes(temp)){
+                                elemSet[atom.elem].push(temp);
+                            }
+                        }
+                    }
+                  }
+
+                let  colorStr = (atom === undefined || atom.color === undefined || atom.color.getHexString().toUpperCase() === 'FFFFFF') ? 'DDDDDD' : atom.color.getHexString();
+                let  color = (atom !== undefined && atom.color !== undefined) ? colorStr : '000000';
+
+                if(commandnameArray.indexOf(name) != -1) {
+                    html += "<button value='" + name + "' style='color:#" + color + "' selected='selected'>" + name + "</button>";
+                }
+                else {
+                    html += "<button value='" + name + "' style='color:#" + color + "' id='legend_button' display='block' selected='selected'>" + name + "</button><br>";
+                    for (let k in elemSet) {
+                        html += "<label class='legend_bullets_" + i + "'>";
+                        for (let v in elemSet[k]) {
+                            html += "<div style='width: 10px; height: 10px; background-color:#" + elemSet[k][v] + "; border: 0px;display:inline-block;' ></div> ";
+                        }
+                        html +=  k + "</label><br>";
+                    }
+                }
+              }
+          }
+
+          return html;
+        }
+
+        setChainsInMenu() { let ic = this.icn3d; ic.icn3dui;
+            for(let chainid in ic.chains) {
+                // skip chains with one residue/chemical
+                if(ic.chainsSeq[chainid] && ic.chainsSeq[chainid].length > 1) {
+                  //ic.defNames2Atoms[chainid] = Object.keys(ic.chains[chainid]);
+                  ic.defNames2Residues[chainid] = Object.keys(ic.firstAtomObjCls.getResiduesFromAtoms(ic.chains[chainid]));
+                  ic.defNames2Descr[chainid] = chainid;
+
+                  let  pos = chainid.indexOf('_');
+                  let  structure = chainid.substr(0, pos);
+                  let  chain = chainid.substr(pos + 1);
+
+                  ic.defNames2Command[chainid] = 'select $' + structure + '.' + chain;
+                }
+            }
+
+            // select whole structure
+            if(Object.keys(ic.structures) == 1) {
+              let  structure = Object.keys(ic.structures)[0];
+
+              ic.defNames2Residues[structure] = Object.keys(ic.residues);
+              ic.defNames2Descr[structure] = structure;
+
+              ic.defNames2Command[structure] = 'select $' + structure;
+            }
+            else {
+                let  resArray = Object.keys(ic.residues);
+                let  structResHash = {};
+                for(let i = 0, il = resArray.length; i < il; ++i) {
+                    let  resid = resArray[i];
+                    let  pos = resid.indexOf('_');
+                    let  structure = resid.substr(0, pos);
+                    if(structResHash[structure] === undefined) {
+                        structResHash[structure] = [];
+                    }
+                    structResHash[structure].push(resid);
+                }
+
+                for(let structure in structResHash) {
+                  ic.defNames2Residues[structure] = structResHash[structure];
+                  ic.defNames2Descr[structure] = structure;
+
+                  ic.defNames2Command[structure] = 'select $' + structure;
+                }
+            }
+        }
+
+        setTransmemInMenu(posZ, negZ, bReset) { let ic = this.icn3d; ic.icn3dui;
+            // set transmembrane, extracellular, intracellular
+            if(ic.bOpm) {
+              let  transmembraneHash = {}, extracellularHash = {}, intracellularHash = {};
+              for(let serial in ic.atoms) {
+                  let  atom = ic.atoms[serial];
+
+                  if(atom.resn === 'DUM') continue;
+
+                  let  residueid = atom.structure + '_' + atom.chain + '_' + atom.resi;
+                  if(atom.coord.z > posZ) {
+                      extracellularHash[residueid] = 1;
+                  }
+                  else if(atom.coord.z < negZ) {
+                      intracellularHash[residueid] = 1;
+                  }
+                  else {
+                      transmembraneHash[residueid] = 1;
+                  }
+              }
+
+              let  extraStr =(bReset) ? '2' : '';
+
+              if(Object.keys(transmembraneHash).length > 0) {
+                  ic.defNames2Residues['transmembrane' + extraStr] = Object.keys(transmembraneHash);
+                  ic.defNames2Descr['transmembrane' + extraStr] = 'transmembrane' + extraStr;
+                  ic.defNames2Command['transmembrane' + extraStr] = 'select :transmembrane' + extraStr;
+              }
+
+              if(Object.keys(extracellularHash).length > 0) {
+                  ic.defNames2Residues['extracellular' + extraStr] = Object.keys(extracellularHash);
+                  ic.defNames2Descr['extracellular' + extraStr] = 'extracellular' + extraStr;
+                  ic.defNames2Command['extracellular' + extraStr] = 'select :extracellular' + extraStr;
+              }
+
+              if(Object.keys(intracellularHash).length > 0) {
+                  ic.defNames2Residues['intracellular' + extraStr] = Object.keys(intracellularHash);
+                  ic.defNames2Descr['intracellular' + extraStr] = 'intracellular' + extraStr;
+                  ic.defNames2Command['intracellular' + extraStr] = 'select :intracellular' + extraStr;
+              }
+            }
+        }
+
+        //Display the menu of defined sets. All chains and defined custom sets are listed in the menu.
+        //All new custom sets will be displayed in the menu.
+        showSets() { let  ic = this.icn3d, me = ic.icn3dui;
+            if(!me.bNode) {
+                me.htmlCls.dialogCls.openDlg('dl_legend', 'Legend');
+                $("#" + ic.pre + "dl_setsmenu2").show();
+                $("#" + ic.pre + "dl_setoperations2").show();
+
+                $("#" + ic.pre + "dl_command2").hide();
+
+                $("#" + ic.pre + "atomsCustom2").resizable();
+            }
+
+            let  prevHAtoms = me.hashUtilsCls.cloneHash(ic.hAtoms);
+            let  prevDAtoms = me.hashUtilsCls.cloneHash(ic.dAtoms);
+
+            if(ic.bSetChainsAdvancedMenu === undefined || !ic.bSetChainsAdvancedMenu || ic.bResetSets) {
+               this.setPredefinedInMenu();
+
+               ic.bSetChainsAdvancedMenu = true;
+            }
+
+            ic.hAtoms = me.hashUtilsCls.cloneHash(prevHAtoms);
+            ic.dAtoms = me.hashUtilsCls.cloneHash(prevDAtoms);
+
+            ic.hlUpdateCls.updateHlMenus();
+        }
+
+        //HighlightAtoms are set up based on the selected custom names "nameArray" in the atom menu.
+        //The corresponding atoms are neither highlighted in the sequence dialog nor in the 3D structure
+        //since not all residue atom are selected.
+        changeCustomAtoms(nameArray, bUpdateHlMenus) { let  ic = this.icn3d, me = ic.icn3dui;
+           ic.hAtoms = {};
+
+           for(let i = 0; i < nameArray.length; ++i) {
+             let  selectedSet = nameArray[i];
+
+             if((ic.defNames2Atoms === undefined || !ic.defNames2Atoms.hasOwnProperty(selectedSet)) &&(ic.defNames2Residues === undefined || !ic.defNames2Residues.hasOwnProperty(selectedSet)) ) continue;
+
+             if(ic.defNames2Atoms !== undefined && ic.defNames2Atoms.hasOwnProperty(selectedSet)) {
+                 let  atomArray = ic.defNames2Atoms[selectedSet];
+
+                 for(let j = 0, jl = atomArray.length; j < jl; ++j) {
+                     ic.hAtoms[atomArray[j]] = 1;
+                 }
+             }
+
+             if(ic.defNames2Residues !== undefined && ic.defNames2Residues.hasOwnProperty(selectedSet)) {
+                 let  residueArrayTmp = ic.defNames2Residues[selectedSet];
+
+                 let  atomHash = {};
+                 for(let j = 0, jl = residueArrayTmp.length; j < jl; ++j) {
+                     atomHash = me.hashUtilsCls.unionHash(atomHash, ic.residues[residueArrayTmp[j]]);
+                 }
+
+                 ic.hAtoms = me.hashUtilsCls.unionHash(ic.hAtoms, atomHash);
+             }
+           } // outer for
+
+           ic.hlUpdateCls.updateHlAll(nameArray, bUpdateHlMenus);
+
+           // show selected chains in annotation window
+           ic.annotationCls.showAnnoSelectedChains();
+
+           // clear commmand
+           $("#" + ic.pre + "command2").val("");
+           $("#" + ic.pre + "command_name2").val("");
+           //$("#" + ic.pre + "command_desc").val("");
+
+           // update the commands in the dialog
+           for(let i = 0, il = nameArray.length; i < il; ++i) {
+               ic.defNames2Atoms[nameArray[i]];
+               ic.defNames2Residues[nameArray[i]];
+               ic.defNames2Descr[nameArray[i]];
+
+               if(i === 0) {
+                 //$("#" + ic.pre + "command").val(atomCommand);
+                 $("#" + ic.pre + "command2").val('saved atoms ' + nameArray[i]);
+                 $("#" + ic.pre + "command_name2").val(nameArray[i]);
+               }
+               else {
+                 let  prevValue = $("#" + ic.pre + "command2").val();
+                 $("#" + ic.pre + "command2").val(prevValue + ' ' + ic.setOperation + ' ' + nameArray[i]);
+
+                 prevValue = $("#" + ic.pre + "command_name2").val();
+                 $("#" + ic.pre + "command_name2").val(prevValue + ' ' + ic.setOperation + ' ' + nameArray[i]);
+               }
+           } // outer for
+        }
+
+        setHAtomsFromSets(nameArray, type) { let  ic = this.icn3d, me = ic.icn3dui;
+           for(let i = 0; i < nameArray.length; ++i) {
+             let  selectedSet = nameArray[i];
+
+             if((ic.defNames2Atoms === undefined || !ic.defNames2Atoms.hasOwnProperty(selectedSet)) &&(ic.defNames2Residues === undefined || !ic.defNames2Residues.hasOwnProperty(selectedSet)) ) continue;
+
+             if(ic.defNames2Atoms !== undefined && ic.defNames2Atoms.hasOwnProperty(selectedSet)) {
+
+                 let  atomArray = ic.defNames2Atoms[selectedSet];
+
+                 if(type === 'or') {
+                     for(let j = 0, jl = atomArray.length; j < jl; ++j) {
+                         ic.hAtoms[atomArray[j]] = 1;
+                     }
+                 }
+                 else if(type === 'and') {
+                     let  atomHash = {};
+                     for(let j = 0, jl = atomArray.length; j < jl; ++j) {
+                         atomHash[atomArray[j]] = 1;
+                     }
+
+                     ic.hAtoms = me.hashUtilsCls.intHash(ic.hAtoms, atomHash);
+                 }
+                 else if(type === 'not') {
+                     //for(let j = 0, jl = atomArray.length; j < jl; ++j) {
+                     //    ic.hAtoms[atomArray[j]] = undefined;
+                     //}
+
+                     let  atomHash = {};
+                     for(let j = 0, jl = atomArray.length; j < jl; ++j) {
+                         atomHash[atomArray[j]] = 1;
+                     }
+
+                     ic.hAtoms = me.hashUtilsCls.exclHash(ic.hAtoms, atomHash);
+                 }
+             }
+
+             if(ic.defNames2Residues !== undefined && ic.defNames2Residues.hasOwnProperty(selectedSet)) {
+                 let  residueArrayTmp = ic.defNames2Residues[selectedSet];
+
+                 let  atomHash = {};
+                 for(let j = 0, jl = residueArrayTmp.length; j < jl; ++j) {
+                     atomHash = me.hashUtilsCls.unionHash(atomHash, ic.residues[residueArrayTmp[j]]);
+                 }
+
+                 if(type === 'or') {
+                     ic.hAtoms = me.hashUtilsCls.unionHash(ic.hAtoms, atomHash);
+                 }
+                 else if(type === 'and') {
+                     ic.hAtoms = me.hashUtilsCls.intHash(ic.hAtoms, atomHash);
+                 }
+                 else if(type === 'not') {
+                     ic.hAtoms = me.hashUtilsCls.exclHash(ic.hAtoms, atomHash);
+                 }
+             }
+           } // outer for
+        }
+
+        updateAdvancedCommands(nameArray, type) { let ic = this.icn3d; ic.icn3dui;
+           // update the commands in the dialog
+           let  separator = ' ' + type + ' ';
+           for(let i = 0, il = nameArray.length; i < il; ++i) {
+               if(i === 0 && type == 'or') {
+                 $("#" + ic.pre + "command2").val('saved atoms ' + nameArray[i]);
+                 $("#" + ic.pre + "command_name2").val(nameArray[i]);
+               }
+               else {
+                 let  prevValue = $("#" + ic.pre + "command2").val();
+                 $("#" + ic.pre + "command2").val(prevValue + separator + nameArray[i]);
+
+                 prevValue = $("#" + ic.pre + "command_name2").val();
+                 $("#" + ic.pre + "command_name2").val(prevValue + separator + nameArray[i]);
+               }
+           } // outer for
+        }
+
+        combineSets(orArray, andArray, notArray, commandname) { let  ic = this.icn3d, me = ic.icn3dui;
+           ic.hAtoms = {};
+           this.setHAtomsFromSets(orArray, 'or');
+
+           if(Object.keys(ic.hAtoms).length == 0) ic.hAtoms = me.hashUtilsCls.cloneHash(ic.atoms);
+           this.setHAtomsFromSets(andArray, 'and');
+
+           this.setHAtomsFromSets(notArray, 'not');
+
+           // expensive to update, avoid it when loading script
+           //ic.hlUpdateCls.updateHlAll();
+           if(!ic.bInitial) ic.hlUpdateCls.updateHlAll();
+
+           // show selected chains in annotation window
+           ic.annotationCls.showAnnoSelectedChains();
+
+           // clear commmand
+           $("#" + ic.pre + "command2").val("");
+           $("#" + ic.pre + "command_name2").val("");
+
+           this.updateAdvancedCommands(orArray, 'or');
+           this.updateAdvancedCommands(andArray, 'and');
+           this.updateAdvancedCommands(notArray, 'not');
+
+           if(commandname !== undefined) {
+               let  select = "select " + $("#" + ic.pre + "command2").val();
+
+               $("#" + ic.pre + "command_name2").val(commandname);
+               ic.selectionCls.addCustomSelection(Object.keys(ic.hAtoms), commandname, commandname, select, false);
+           }
+        }
+
+        commandSelect(postfix) { let  ic = this.icn3d, me = ic.icn3dui;
+               let  select = $("#" + ic.pre + "command2" + postfix).val();
+
+               let  commandname = $("#" + ic.pre + "command_name2" + postfix).val().replace(/;/g, '_').replace(/\s+/g, '_');
+
+               if(select) {
+                   ic.selByCommCls.selectByCommand(select, commandname, commandname);
+                   me.htmlCls.clickMenuCls.setLogCmd('select ' + select + ' | name ' + commandname, true);
+               }
+        }
+
+        clickCommand_apply() { let  ic = this.icn3d, me = ic.icn3dui;
+            let  thisClass = this;
+            me.myEventCls.onIds("#" + ic.pre + "command_apply", "click", function(e) { thisClass.icn3d;
+               e.preventDefault();
+
+               thisClass.commandSelect('');
+            });
+
+            me.myEventCls.onIds("#" + ic.pre + "command_apply2", "click", function(e) { thisClass.icn3d;
+               e.preventDefault();
+               thisClass.commandSelect('2');
+            });
+
+        }
+
+        selectCombinedSets(strSets, commandname) { let ic = this.icn3d; ic.icn3dui;
+            let  idArray = strSets.split(' ');
+
+            let  orArray = [], andArray = [], notArray = [];
+            let  prevLabel = 'or';
+
+            for(let i = 0, il = idArray.length; i < il; ++i) {
+                if(idArray[i] === 'or' || idArray[i] === 'and' || idArray[i] === 'not') {
+                    prevLabel = idArray[i];
+                    continue;
+                }
+                else {
+                    if(prevLabel === 'or') {
+                        orArray.push(idArray[i]);
+                    }
+                    else if(prevLabel === 'and') {
+                        andArray.push(idArray[i]);
+                    }
+                    else if(prevLabel === 'not') {
+                        notArray.push(idArray[i]);
+                    }
+                }
+            }
+
+            if(idArray !== null) this.combineSets(orArray, andArray, notArray, commandname);
+        }
+
+        clickModeswitch() { let  ic = this.icn3d, me = ic.icn3dui;
+            let  thisClass = this;
+            me.myEventCls.onIds("#" + ic.pre + "modeswitch", "click", function(e) {
+                if($("#" + ic.pre + "modeswitch")[0] !== undefined && $("#" + ic.pre + "modeswitch")[0].checked) { // mode: selection
+                    thisClass.setModeAndDisplay('selection');
+                }
+                else { // mode: all
+                    thisClass.setModeAndDisplay('all');
+                }
+            });
+        }
+
+        setModeAndDisplay(mode) { let  ic = this.icn3d, me = ic.icn3dui;
+            if(mode === 'all') { // mode all
+                this.setMode('all');
+
+                // remember previous selection
+                ic.prevHighlightAtoms = me.hashUtilsCls.cloneHash(ic.hAtoms);
+
+               // select all
+               me.htmlCls.clickMenuCls.setLogCmd("set mode all", true);
+
+               ic.selectionCls.selectAll();
+
+               ic.drawCls.draw();
+            }
+            else { // mode selection
+                this.setMode('selection');
+
+                // get the previous hAtoms
+                if(ic.prevHighlightAtoms !== undefined) {
+                    ic.hAtoms = me.hashUtilsCls.cloneHash(ic.prevHighlightAtoms);
+                }
+                else {
+                    ic.selectionCls.selectAll();
+                }
+
+                me.htmlCls.clickMenuCls.setLogCmd("set mode selection", true);
+
+                ic.hlUpdateCls.updateHlAll();
+            }
+        }
+
+        setMode(mode) { let ic = this.icn3d; ic.icn3dui;
+            if(mode === 'all') { // mode all
+                // set text
+                $("#" + ic.pre + "modeall").show();
+                $("#" + ic.pre + "modeselection").hide();
+
+                if($("#" + ic.pre + "modeswitch")[0] !== undefined) $("#" + ic.pre + "modeswitch")[0].checked = false;
+
+                if($("#" + ic.pre + "style").hasClass('icn3d-modeselection')) $("#" + ic.pre + "style").removeClass('icn3d-modeselection');
+                if($("#" + ic.pre + "color").hasClass('icn3d-modeselection')) $("#" + ic.pre + "color").removeClass('icn3d-modeselection');
+                //if($("#" + ic.pre + "surface").hasClass('icn3d-modeselection')) $("#" + ic.pre + "surface").removeClass('icn3d-modeselection');
+            }
+            else { // mode selection
+                //if(Object.keys(ic.hAtoms).length < Object.keys(ic.atoms).length) {
+                    // set text
+                    $("#" + ic.pre + "modeall").hide();
+                    $("#" + ic.pre + "modeselection").show();
+
+                    if($("#" + ic.pre + "modeswitch")[0] !== undefined) $("#" + ic.pre + "modeswitch")[0].checked = true;
+
+                    if(!$("#" + ic.pre + "style").hasClass('icn3d-modeselection')) $("#" + ic.pre + "style").addClass('icn3d-modeselection');
+                    if(!$("#" + ic.pre + "color").hasClass('icn3d-modeselection')) $("#" + ic.pre + "color").addClass('icn3d-modeselection');
+                    //if(!$("#" + ic.pre + "surface").hasClass('icn3d-modeselection')) $("#" + ic.pre + "surface").addClass('icn3d-modeselection');
+
+                    // show selected chains in annotation window
+                    //ic.annotationCls.showAnnoSelectedChains();
+                //}
+            }
+        }
+        getAtomsFromOneSet(commandname) {  let  ic = this.icn3d, me = ic.icn3dui;  // ic.pAtom is set already
+           let  residuesHash = {};
+           // defined sets is not set up
+           if(ic.defNames2Residues['proteins'] === undefined) {
+               this.showSets();
+           }
+           //for(let i = 0, il = nameArray.length; i < il; ++i) {
+               //var commandname = nameArray[i];
+               if(Object.keys(ic.chains).indexOf(commandname) !== -1) {
+                   residuesHash = me.hashUtilsCls.unionHash(residuesHash, ic.chains[commandname]);
+               }
+               else {
+                   if(ic.defNames2Residues[commandname] !== undefined && ic.defNames2Residues[commandname].length > 0) {
+                       for(let j = 0, jl = ic.defNames2Residues[commandname].length; j < jl; ++j) {
+                           let  resid = ic.defNames2Residues[commandname][j]; // return an array of resid
+                           residuesHash = me.hashUtilsCls.unionHash(residuesHash, ic.residues[resid]);
+                       }
+                   }
+                   if(ic.defNames2Atoms[commandname] !== undefined && ic.defNames2Atoms[commandname].length > 0) {
+                       for(let j = 0, jl = ic.defNames2Atoms[commandname].length; j < jl; ++j) {
+                           //var resid = ic.defNames2Atoms[commandname][j]; // return an array of serial
+                           //residuesHash = me.hashUtilsCls.unionHash(residuesHash, ic.residues[resid]);
+                           let  serial = ic.defNames2Atoms[commandname][j]; // return an array of serial
+                           residuesHash[serial] = 1;
+                       }
+                   }
+               }
+           //}
+           return residuesHash;
+        }
+
+    /*
+        getAtomsFromSets(nameArray) {  let  ic = this.icn3d, me = ic.icn3dui;  // ic.pAtom is set already
+           let  residuesHash = {}
+           for(let i = 0, il = nameArray.length; i < il; ++i) {
+               commandname = nameArray[i];
+               let  residuesHashTmp = this.getAtomsFromOneSet(commandname);
+               residuesHash = me.hashUtilsCls.unionHash(residuesHash, residuesHashTmp);
+           }
+           return residuesHash;
+        }
+    */
+
+        getAtomsFromNameArray(nameArray) {  let  ic = this.icn3d, me = ic.icn3dui;
+            let  selAtoms = {};
+            for(let i = 0, il = nameArray.length; i < il; ++i) {
+                if(nameArray[i] === 'non-selected') { // select all hAtoms
+                   let  currAtoms = {};
+                   for(let i in ic.atoms) {
+                       if(!ic.hAtoms.hasOwnProperty(i) && ic.dAtoms.hasOwnProperty(i)) {
+                           currAtoms[i] = ic.atoms[i];
+                       }
+                   }
+                   selAtoms = me.hashUtilsCls.unionHash(selAtoms, currAtoms);
+                }
+                else if(nameArray[i] === 'selected') {
+                    selAtoms = me.hashUtilsCls.unionHash(selAtoms, me.hashUtilsCls.hash2Atoms(ic.hAtoms, ic.atoms) );
+                }
+                else {
+                    selAtoms = me.hashUtilsCls.unionHash(selAtoms, me.hashUtilsCls.hash2Atoms(this.getAtomsFromOneSet(nameArray[i]), ic.atoms) );
+                }
+            }
+            if(nameArray.length == 0) selAtoms = ic.atoms;
+            return selAtoms;
+        }
+
+    }
+
+    /**
+     * @author Jiyao Wang <wangjiy@ncbi.nlm.nih.gov> / https://github.com/ncbi/icn3d
+     */
+
     class Events {
         constructor(icn3dui) {
             this.icn3dui = icn3dui;
@@ -51492,6 +52219,7 @@ var icn3d = (function (exports) {
 
                if(bAppend) {
                    if(ic.bSetChainsAdvancedMenu) ic.definedSetsCls.showSets();
+                   if(ic.bSetChainsAdvancedMenu) ic.legendCls.showSets();
                    if(ic.bAnnoShown) ic.showAnnoCls.showAnnotations();
                }
              };
@@ -51524,6 +52252,8 @@ var icn3d = (function (exports) {
             ic.definedSetsCls.clickCustomAtoms();
             ic.definedSetsCls.clickCommand_apply();
             ic.definedSetsCls.clickModeswitch();
+
+            ic.legendCls.clickModeswitch();
 
             ic.selectionCls.clickShow_selected();
             ic.selectionCls.clickHide_selected();
@@ -51700,6 +52430,15 @@ var icn3d = (function (exports) {
         //    },
 
         // other
+            me.myEventCls.onIds("#" + "legend_button", "click", function(e) {
+                e.preventDefault();
+                console.log(e);
+                console.log("here");
+                const elems = document.getElementsByClassName("legend_bullets_" + i);
+                for (let i = 0; i < elems.length; i++) {
+                    elems[i].style.display = "none";
+                }
+            });
         //    clickViewswitch: function() {
             me.myEventCls.onIds("#" + me.pre + "anno_summary", "click", function(e) { let ic = me.icn3d;
                 e.preventDefault();
@@ -53759,6 +54498,51 @@ var icn3d = (function (exports) {
             html += 'Specification Tips: <div style="width:20px; margin-top:6px; display:inline-block;"><span id="' + me.pre + 'specguide' + indexStr + '_expand" class="ui-icon ui-icon-plus icn3d-expand icn3d-link" style="width:15px;" title="Expand"></span><span id="' + me.pre + 'specguide' + indexStr + '_shrink" class="ui-icon ui-icon-minus icn3d-shrink icn3d-link" style="display:none; width:15px;" title="Shrink"></span></div><br>';
 
             html += me.htmlCls.divStr + "specguide" + indexStr + "' style='display:none; width:500px' class='icn3d-box'>";
+
+            html += "<b>Specification:</b> In the selection \"$1HHO,4N7N.A,B,C:5-10,LV,3AlaVal,chemicals@CA,C\":";
+            html += "<ul><li>\"$1HHO,4N7N\" uses \"$\" to indicate structure selection.<br/>";
+            html += "<li>\".A,B,C\" uses \".\" to indicate chain selection.<br/>";
+            html += "<li>\":5-10,LV,3LeuVal,chemicals\" uses the colon \":\" to indicate residue selection. Residue selection could be residue number(5-10), one-letter IUPAC residue name abbreviations(LV), three-letter residue names(AlaVal, \"3\" indicates each residue name has three letters), or predefined names: \"proteins\", \"nucleotides\", \"chemicals\", \"ions\", and \"water\". IUPAC abbreviations can be written either as a contiguous string(e.g., \":LV\"), in order to find all instances of that sequence in the structure, or they can be separated by commas(e.g., \":L,V\") to select all residues of a given type in the structure(in the latter case, select all Leucine and Valine in the structure).<br/>";
+            html += "<li>\"@CA,C\" uses \"@\" to indicate atom selection.<br/>";
+            html += "<li>Partial definition is allowed, e.g., \":1-10\" selects all residue IDs 1-10 in all chains.<br/>";
+            html += "<li>Different selections can be unioned(with \"<b>or</b>\", default), intersected(with \"<b>and</b>\"), or negated(with \"<b>not</b>\"). For example, \":1-10 or :K\" selects all residues 1-10 and all Lys residues. \":1-10 and :K\" selects all Lys residues in the range of residue number 1-10. \":1-10 or not :K\" selects all residues 1-10, which are not Lys residues.<br/>";
+            html += "<li>The wild card character \"X\" or \"x\" can be used to represent any character.";
+            html += "</ul>";
+            html += "<b>Set Operation:</b>";
+            html += "<ul><li>Users can select multiple sets in the menu \"Select > Defined Sets\".<br/>";
+            html += "<li>Different sets can be unioned(with \"<b>or</b>\", default), intersected(with \"<b>and</b>\"), or negated(with \"<b>not</b>\"). For example, if the \"Defined Sets\" menu has four sets \":1-10\", \":11-20\", \":5-15\", and \":7-8\", the command \"saved atoms :1-10 or :11-20 and :5-15 not :7-8\" unions all residues 1-10 and 11-20 to get the residues 1-20, then intersects with the residues 5-15 to get the residues 5-15, then exclude the residues 7-8 to get the final residues 5-6 and 9-15.</ul>";
+            html += "<b>Full commands in url or command window:</b>";
+            html += "<ul><li>Select without saving the set: select $1HHO,4N7N.A,B,C:5-10,LV,chemicals@CA,C<br/>";
+            //html += "<li>Select and save: select $1HHO,4N7N.A,B,C:5-10,LV,chemicals@CA,C | name my_name | description my_description</ul>";
+            html += "<li>Select and save: select $1HHO,4N7N.A,B,C:5-10,LV,chemicals@CA,C | name my_name</ul>";
+
+            html += "</div>";
+
+            html += "</td></tr></table>";
+            html += "</div>";
+
+            return html;
+        }
+
+        setAdvanced2(index) { let me = this.icn3dui; me.icn3d;
+            let indexStr =(index === undefined) ? '' : index;
+
+            let dialogClass =(me.cfg.notebook) ? 'icn3d-hidden' : '';
+            let html = me.htmlCls.divStr + "dl_advanced2" + indexStr + "' class='" + dialogClass + "'>";
+
+            html += "<table width='500'><tr><td valign='top'><table cellspacing='0'>";
+            html += "<tr><td><b>Select:</b></td><td>" + me.htmlCls.inputTextStr + "id='" + me.pre + "command2" + indexStr + "' placeholder='$[structures].[chains]:[residues]@[atoms]' size='60'></td></tr>";
+            html += "<tr><td><b>Name:</b></td><td>" + me.htmlCls.inputTextStr + "id='" + me.pre + "command_name2" + indexStr + "' placeholder='my_selection' size='60'></td></tr>";
+            html += "<tr><td colspan='2' align='left'>" + me.htmlCls.space3 + me.htmlCls.buttonStr + "command_apply2" + indexStr + "'><b>Save Selection to Defined Sets</b></button></td></tr>";
+            html += "</table></td>";
+
+            html += "</tr>";
+
+            html += "<tr><td>";
+
+            html += 'Specification Tips: <div style="width:20px; margin-top:6px; display:inline-block;"><span id="' + me.pre + 'specguide2' + indexStr + '_expand" class="ui-icon ui-icon-plus icn3d-expand icn3d-link" style="width:15px;" title="Expand"></span><span id="' + me.pre + 'specguide' + indexStr + '_shrink" class="ui-icon ui-icon-minus icn3d-shrink icn3d-link" style="display:none; width:15px;" title="Shrink"></span></div><br>';
+
+            html += me.htmlCls.divStr + "specguide2" + indexStr + "' style='display:none; width:500px' class='icn3d-box'>";
 
             html += "<b>Specification:</b> In the selection \"$1HHO,4N7N.A,B,C:5-10,LV,3AlaVal,chemicals@CA,C\":";
             html += "<ul><li>\"$1HHO,4N7N\" uses \"$\" to indicate structure selection.<br/>";
@@ -57895,6 +58679,7 @@ var icn3d = (function (exports) {
 
         this.applyCommandCls = new ApplyCommand(this);
         this.definedSetsCls = new DefinedSets(this);
+        this.legendCls = new Legend(this);
         this.loadScriptCls = new LoadScript(this);
         this.selByCommCls = new SelectByCommand(this);
         this.selectionCls = new Selection(this);

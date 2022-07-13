@@ -703,6 +703,21 @@ class ClickMenu {
         me.myEventCls.onIds("#" + me.pre + "setNot", "click", function(e) { let ic = me.icn3d;
            ic.setOperation = 'not';
         });
+
+        me.myEventCls.onIds("#" + me.pre + "mn_legend", "click", function(e) { let ic = me.icn3d;
+            ic.legendCls.showSets();
+            thisClass.setLogCmd('legend', true);
+         });
+
+         me.myEventCls.onIds("#" + "legend_button", "click", function(e) {
+            console.log(e)
+            console.log("here")
+            const elems = document.getElementsByClassName("legend_bullets_" + i)
+            for (let i = 0; i < elems.length; i++) {
+                elems[i].style.display = "none";
+            }
+         });
+         
     //    },
     //    clkMn2_pkNo: function() {
         me.myEventCls.onIds("#" + me.pre + "mn2_pkNo", "click", function(e) { let ic = me.icn3d;

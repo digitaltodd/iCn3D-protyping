@@ -96,6 +96,14 @@ class SetDialog {
 
         html += me.htmlCls.setHtmlCls.setAdvanced(2);
 
+        html += me.htmlCls.divStr + "dl_legend' class='" + dialogClass + "'>";
+        html += me.htmlCls.divStr + "dl_legendmenu2'>";
+        html += "<b>Legend:</b> <br/>";
+        html += "<div id='" + me.pre + "atomsCustom2' multiple size='6' style='min-width:130px;'>";
+        html += "</div>";
+        html += "</div>";
+        html += "</div>";
+
         html += me.htmlCls.divStr + "dl_mmtfid' class='" + dialogClass + "'>";
         html += "MMTF ID: " + me.htmlCls.inputTextStr + "id='" + me.pre + "mmtfid' value='1TUP' size=8> ";
         html += me.htmlCls.buttonStr + "reload_mmtf'>Load</button>";

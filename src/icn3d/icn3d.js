@@ -102,6 +102,7 @@ import {LoadPDB} from './parsers/loadPDB.js';
 
 import {ApplyCommand} from './selection/applyCommand.js';
 import {DefinedSets} from './selection/definedSets.js';
+import {Legend} from './selection/legend.js';
 import {LoadScript} from './selection/loadScript.js';
 import {SelectByCommand} from './selection/selectByCommand.js';
 import {Selection} from './selection/selection.js';
@@ -551,6 +552,7 @@ class iCn3D {
 
     this.applyCommandCls = new ApplyCommand(this);
     this.definedSetsCls = new DefinedSets(this);
+    this.legendCls = new Legend(this);
     this.loadScriptCls = new LoadScript(this);
     this.selByCommCls = new SelectByCommand(this);
     this.selectionCls = new Selection(this);

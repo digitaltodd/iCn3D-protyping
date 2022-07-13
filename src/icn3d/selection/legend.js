@@ -11,8 +11,9 @@ import {Html} from '../../html/html.js';
 import {Selection} from '../selection/selection.js';
 import {HlUpdate} from '../highlight/hlUpdate.js';
 import {Annotation} from '../annotations/annotation.js';
+import { ApplyOther } from '../display/applyOther.js';
 
-class DefinedSets {
+class Legend {
     constructor(icn3d) {
         this.icn3d = icn3d;
     }
@@ -152,34 +153,62 @@ class DefinedSets {
            if($.inArray(elem, nameArray) === -1) nameArray.push(elem);
       });
 
+      console.log(nameArray)
+      
+
       //for(let i in ic.defNames2Atoms) {
       for(let i = 0, il = nameArray.length; i < il; ++i) {
           let  name = nameArray[i];
-
           let  atom, atomHash;
+
           if(ic.defNames2Atoms !== undefined && ic.defNames2Atoms.hasOwnProperty(name)) {
               let  atomArray = ic.defNames2Atoms[name];
 
               if(atomArray.length > 0) atom = ic.atoms[atomArray[0]];
           }
+
           else if(ic.defNames2Residues !== undefined && ic.defNames2Residues.hasOwnProperty(name)) {
-              let  residueArray = ic.defNames2Residues[name];
+              let residueArray = ic.defNames2Residues[name];
+              let elemSet = {};
               if(residueArray.length > 0) {
                   atomHash = ic.residues[residueArray[0]]
                   if(atomHash) {
                       atom = ic.atoms[Object.keys(atomHash)[0]];
                   }
               }
-          }
+              
+              for(let i = 0; i < residueArray.length; i++){
+                atomHash = ic.residues[residueArray[i]]
+                if(atomHash) {
+                    for (let j = 0; j < Object.keys(atomHash).length; j++){
+                        atom = ic.atoms[Object.keys(atomHash)[j]];
+                        let temp = (atom === undefined || atom.color === undefined || atom.color.getHexString().toUpperCase() === 'FFFFFF') ? 'DDDDDD' : atom.color.getHexString();
+                        if (elemSet[atom.elem] === undefined){
+                            elemSet[atom.elem] = []
+                        }
+                        if (!elemSet[atom.elem].includes(temp)){
+                            elemSet[atom.elem].push(temp)
+                        }
+                    }
+                }
+              }
 
-          let  colorStr =(atom === undefined || atom.color === undefined || atom.color.getHexString().toUpperCase() === 'FFFFFF') ? 'DDDDDD' : atom.color.getHexString();
-          let  color =(atom !== undefined && atom.color !== undefined) ? colorStr : '000000';
+            let  colorStr = (atom === undefined || atom.color === undefined || atom.color.getHexString().toUpperCase() === 'FFFFFF') ? 'DDDDDD' : atom.color.getHexString();
+            let  color = (atom !== undefined && atom.color !== undefined) ? colorStr : '000000';
 
-          if(commandnameArray.indexOf(name) != -1) {
-            html += "<label value='" + name + "' style='color:#" + color + "' selected='selected'>" + name + "</label>";
-          }
-          else {
-            html += "<label value='" + name + "' style='color:#" + color + "'>" + name + "</label>";
+            if(commandnameArray.indexOf(name) != -1) {
+                html += "<button value='" + name + "' style='color:#" + color + "' selected='selected'>" + name + "</button>";
+            }
+            else {
+                html += "<button value='" + name + "' style='color:#" + color + "' id='legend_button' display='block' selected='selected'>" + name + "</button><br>";
+                for (let k in elemSet) {
+                    html += "<label class='legend_bullets_" + i + "'>"
+                    for (let v in elemSet[k]) {
+                        html += "<div style='width: 10px; height: 10px; background-color:#" + elemSet[k][v] + "; border: 0px;display:inline-block;' ></div> ";
+                    }
+                    html +=  k + "</label><br>"
+                }
+            }
           }
       }
 
@@ -280,13 +309,13 @@ class DefinedSets {
     //All new custom sets will be displayed in the menu.
     showSets() { let  ic = this.icn3d, me = ic.icn3dui;
         if(!me.bNode) {
-            me.htmlCls.dialogCls.openDlg('dl_definedsets', 'Select sets');
-            $("#" + ic.pre + "dl_setsmenu").show();
-            $("#" + ic.pre + "dl_setoperations").show();
+            me.htmlCls.dialogCls.openDlg('dl_legend', 'Legend');
+            $("#" + ic.pre + "dl_setsmenu2").show();
+            $("#" + ic.pre + "dl_setoperations2").show();
 
-            $("#" + ic.pre + "dl_command").hide();
+            $("#" + ic.pre + "dl_command2").hide();
 
-            $("#" + ic.pre + "atomsCustom").resizable();
+            $("#" + ic.pre + "atomsCustom2").resizable();
         }
 
         let  prevHAtoms = me.hashUtilsCls.cloneHash(ic.hAtoms);
@@ -302,52 +331,6 @@ class DefinedSets {
         ic.dAtoms = me.hashUtilsCls.cloneHash(prevDAtoms);
 
         ic.hlUpdateCls.updateHlMenus();
-    }
-
-    clickCustomAtoms() { let  ic = this.icn3d, me = ic.icn3dui;
-        let  thisClass = this;
-        //me.myEventCls.onIds("#" + ic.pre + "atomsCustom", "change", function(e) { let  ic = thisClass.icn3d;
-        $("#" + ic.pre + "atomsCustom").change(function(e) { let  ic = thisClass.icn3d;
-           let  nameArray = $(this).val();
-           ic.nameArray = nameArray;
-
-           if(nameArray !== null) {
-             // log the selection
-             //me.htmlCls.clickMenuCls.setLogCmd('select saved atoms ' + nameArray.toString(), true);
-
-             let  bUpdateHlMenus = false;
-             thisClass.changeCustomAtoms(nameArray, bUpdateHlMenus);
-             //me.htmlCls.clickMenuCls.setLogCmd('select saved atoms ' + nameArray.join(' ' + ic.setOperation + ' '), true);
-             me.htmlCls.clickMenuCls.setLogCmd('select sets ' + nameArray.join(' ' + ic.setOperation + ' '), true);
-
-             ic.bSelectResidue = false;
-           }
-        });
-
-        me.myEventCls.onIds("#" + ic.pre + "atomsCustom", "focus", function(e) { let  ic = thisClass.icn3d;
-           if(me.utilsCls.isMobile()) $("#" + ic.pre + "atomsCustom").val("");
-        });
-    }
-
-    //Delete selected sets in the menu of "Defined Sets".
-    deleteSelectedSets() { let  ic = this.icn3d, me = ic.icn3dui;
-       let  nameArray = $("#" + ic.pre + "atomsCustom").val();
-
-       for(let i = 0; i < nameArray.length; ++i) {
-         let  selectedSet = nameArray[i];
-
-         if((ic.defNames2Atoms === undefined || !ic.defNames2Atoms.hasOwnProperty(selectedSet)) &&(ic.defNames2Residues === undefined || !ic.defNames2Residues.hasOwnProperty(selectedSet)) ) continue;
-
-         if(ic.defNames2Atoms !== undefined && ic.defNames2Atoms.hasOwnProperty(selectedSet)) {
-             delete ic.defNames2Atoms[selectedSet];
-         }
-
-         if(ic.defNames2Residues !== undefined && ic.defNames2Residues.hasOwnProperty(selectedSet)) {
-             delete ic.defNames2Residues[selectedSet];
-         }
-       } // outer for
-
-       ic.hlUpdateCls.updateHlMenus();
     }
 
     //HighlightAtoms are set up based on the selected custom names "nameArray" in the atom menu.
@@ -387,8 +370,8 @@ class DefinedSets {
        ic.annotationCls.showAnnoSelectedChains();
 
        // clear commmand
-       $("#" + ic.pre + "command").val("");
-       $("#" + ic.pre + "command_name").val("");
+       $("#" + ic.pre + "command2").val("");
+       $("#" + ic.pre + "command_name2").val("");
        //$("#" + ic.pre + "command_desc").val("");
 
        // update the commands in the dialog
@@ -399,15 +382,15 @@ class DefinedSets {
 
            if(i === 0) {
              //$("#" + ic.pre + "command").val(atomCommand);
-             $("#" + ic.pre + "command").val('saved atoms ' + nameArray[i]);
-             $("#" + ic.pre + "command_name").val(nameArray[i]);
+             $("#" + ic.pre + "command2").val('saved atoms ' + nameArray[i]);
+             $("#" + ic.pre + "command_name2").val(nameArray[i]);
            }
            else {
-             let  prevValue = $("#" + ic.pre + "command").val();
-             $("#" + ic.pre + "command").val(prevValue + ' ' + ic.setOperation + ' ' + nameArray[i]);
+             let  prevValue = $("#" + ic.pre + "command2").val();
+             $("#" + ic.pre + "command2").val(prevValue + ' ' + ic.setOperation + ' ' + nameArray[i]);
 
-             prevValue = $("#" + ic.pre + "command_name").val();
-             $("#" + ic.pre + "command_name").val(prevValue + ' ' + ic.setOperation + ' ' + nameArray[i]);
+             prevValue = $("#" + ic.pre + "command_name2").val();
+             $("#" + ic.pre + "command_name2").val(prevValue + ' ' + ic.setOperation + ' ' + nameArray[i]);
            }
        } // outer for
     }
@@ -475,15 +458,15 @@ class DefinedSets {
        let  separator = ' ' + type + ' ';
        for(let i = 0, il = nameArray.length; i < il; ++i) {
            if(i === 0 && type == 'or') {
-             $("#" + ic.pre + "command").val('saved atoms ' + nameArray[i]);
-             $("#" + ic.pre + "command_name").val(nameArray[i]);
+             $("#" + ic.pre + "command2").val('saved atoms ' + nameArray[i]);
+             $("#" + ic.pre + "command_name2").val(nameArray[i]);
            }
            else {
-             let  prevValue = $("#" + ic.pre + "command").val();
-             $("#" + ic.pre + "command").val(prevValue + separator + nameArray[i]);
+             let  prevValue = $("#" + ic.pre + "command2").val();
+             $("#" + ic.pre + "command2").val(prevValue + separator + nameArray[i]);
 
-             prevValue = $("#" + ic.pre + "command_name").val();
-             $("#" + ic.pre + "command_name").val(prevValue + separator + nameArray[i]);
+             prevValue = $("#" + ic.pre + "command_name2").val();
+             $("#" + ic.pre + "command_name2").val(prevValue + separator + nameArray[i]);
            }
        } // outer for
     }
@@ -505,25 +488,25 @@ class DefinedSets {
        ic.annotationCls.showAnnoSelectedChains();
 
        // clear commmand
-       $("#" + ic.pre + "command").val("");
-       $("#" + ic.pre + "command_name").val("");
+       $("#" + ic.pre + "command2").val("");
+       $("#" + ic.pre + "command_name2").val("");
 
        this.updateAdvancedCommands(orArray, 'or');
        this.updateAdvancedCommands(andArray, 'and');
        this.updateAdvancedCommands(notArray, 'not');
 
        if(commandname !== undefined) {
-           let  select = "select " + $("#" + ic.pre + "command").val();
+           let  select = "select " + $("#" + ic.pre + "command2").val();
 
-           $("#" + ic.pre + "command_name").val(commandname);
+           $("#" + ic.pre + "command_name2").val(commandname);
            ic.selectionCls.addCustomSelection(Object.keys(ic.hAtoms), commandname, commandname, select, false);
        }
     }
 
     commandSelect(postfix) { let  ic = this.icn3d, me = ic.icn3dui;
-           let  select = $("#" + ic.pre + "command" + postfix).val();
+           let  select = $("#" + ic.pre + "command2" + postfix).val();
 
-           let  commandname = $("#" + ic.pre + "command_name" + postfix).val().replace(/;/g, '_').replace(/\s+/g, '_');
+           let  commandname = $("#" + ic.pre + "command_name2" + postfix).val().replace(/;/g, '_').replace(/\s+/g, '_');
 
            if(select) {
                ic.selByCommCls.selectByCommand(select, commandname, commandname);
@@ -713,4 +696,4 @@ class DefinedSets {
 
 }
 
-export {DefinedSets}
+export {Legend}
