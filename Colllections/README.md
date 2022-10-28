@@ -1,7 +1,7 @@
-#Collections in iCn3D
+# Collections in iCn3D
 
-##V1 Getting started
-###V1.0 read a list, display structure on click
+## V1 Getting started
+### V1.0 read a list, display structure on click
 1.	First step read in a file of PDB IDs with metadata
 a.	PDB ID
 b.	Title
