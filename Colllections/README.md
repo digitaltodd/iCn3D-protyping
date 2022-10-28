@@ -2,12 +2,12 @@
 
 ## V1 Getting started
 ### V1.0 read a list, display structure on click
-1.	 First step read in a file of PDB IDs with metadata
+1. First step read in a file of PDB IDs with metadata
 - PDB ID
 - Title
-2.	 Display titles in a window, “Structure Collection”
-3.		Clicking a title displays the structure
-4.		The first title is loaded by default
+2. Display titles in a window, “Structure Collection”
+3. Clicking a title displays the structure
+4. The first title is loaded by default
 Structures are loaded into iCn3D from NCBI as if an ID is used as the input: File > Retrieve by ID. MMDB files are initially preferred (default)
 Requires a new menu item. Add to Analysis > Collection (dimmed if there is no collection). Add collection under defined sets. 
 
