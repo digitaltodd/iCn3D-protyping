@@ -15063,7 +15063,7 @@ var icn3d = (function (exports) {
             html += me.htmlCls.divStr + "dl_collectionsMenu'>";
             html += '<b>Collection File</b>: <div style="width:20px; margin-top:6px; display:inline-block;"><span id="' + me.pre + 'dl_collection_file_expand" class="ui-icon ui-icon-plus icn3d-expand icn3d-link" style="display:none; width:15px;" title="Expand"></span><span id="' + me.pre + 'dl_collection_file_shrink" class="ui-icon ui-icon-minus icn3d-shrink icn3d-link" style="width:15px;" title="Shrink"></span></div><br>';
             html += me.htmlCls.divStr + "dl_collection_file' style=''>";
-            html += "You can load a collection of structures via a file. Here is <a href='https://github.com/ncbi/icn3d/blob/master/example/collection.json' target='_blank'>one example file</a><br><br>";
+            html += "You can load a collection of structures via a file. Here are <a href='https://github.com/ncbi/icn3d/blob/master/example/collection/' target='_blank'>some example files</a><br><br>";
             html += "Collection file: " + me.htmlCls.inputFileStr + "id='" + me.pre + "collectionfile'><br/>";
             html += me.htmlCls.buttonStr + "reload_collectionfile' style='margin-top: 6px;'>Load</button>";
             html += "</div>";
@@ -17493,27 +17493,165 @@ var icn3d = (function (exports) {
                 } else {
                     ic.resizeCanvasCls.closeDialogs();
                 }
-                me.htmlCls.setHtmlCls.fileSupport();
-                    let reader = new FileReader();
-                    
-                    reader.onload = async function (e) {
-                    let dataStr = JSON.parse(e.target.result);
-                    let collection = [dataStr["structures"].map(({ id }) => id), dataStr["structures"].map(({ title }) => title)];
-                    let collectionHtml = ic.selectCollectionsCls.setAtomMenu(collection[0], collection[1]);
-
-                    $("#" + ic.pre + "collections_menu").html(collectionHtml);
-                    ic.selectCollectionsCls.clickStructure();
-        
-                    $("#" + ic.pre + "collections_menu").trigger("change");
-        
-                    me.htmlCls.clickMenuCls.setLogCmd(
-                    "load collection file " +
-                        $("#" + me.pre + "collectionfile").val(),
-                    false
-                    );
-                    
+                
+                ic.pdbCollection = [];
+                ic.allData = {};
+                ic.allData['all'] = {
+                    'atoms': {},
+                    'proteins': {},
+                    'nucleotides': {},
+                    'chemicals': {},
+                    'ions': {},
+                    'water': {},
+                    'structures': {}, // getSSExpandedAtoms
+                    'ssbondpnts': {},
+                    'residues': {}, // getSSExpandedAtoms
+                    'chains': {},
+                    'chainsSeq': {}, //Sequences and Annotation
+                    'defNames2Atoms': {},
+                    'defNames2Residues': {}
                 };
-                reader.readAsText(file);
+                ic.allData['prev'] = {};
+                ic.selectCollectionsCls.reset();
+
+                ic.dAtoms = me.hashUtilsCls.cloneHash(ic.atoms);
+                ic.hAtoms = me.hashUtilsCls.cloneHash(ic.atoms);
+                me.htmlCls.setHtmlCls.fileSupport();
+
+                let fileName = file.name;
+                let fileExtension = fileName.split('.').pop().toLowerCase();
+
+                $("#" + ic.pre + "collections_menu").empty();
+                $("#" + ic.pre + "collections_menu").off("change");
+
+                function parseJsonCollection(data) {
+                    let dataStr = JSON.parse(data);
+                    return dataStr["structures"].map(({ id, title }) => [id, title, false]);
+                }
+
+                function parsePdbCollection(data) {
+                    let dataStr = data;
+                    let lines = dataStr.split('\n');
+                  
+                    let sections = [];
+                    let currentSection = [];
+                  
+                    lines.forEach(line => {
+                      if (line.startsWith('HEADER')) {
+                        currentSection = [];
+                        sections.push(currentSection);
+                      }
+                      currentSection.push(line);
+                    });
+                  
+                    console.log(sections);
+                  
+                    let ids = [];
+                    let titles = [];
+                  
+                    sections.forEach((section) => {
+                      let headerLine = section[0];
+                      headerLine = headerLine.replace(/[\n\r]/g, '').trim();
+                      let header = headerLine.split(' ').filter(Boolean);
+                      let lastElement = header[header.length - 1];
+                      ids.push(lastElement);
+                      titles.push(lastElement);
+                    });
+                  
+                    if (sections.length > 0) {
+                        ic.pdbCollection.push(...sections);
+                    }
+
+                    return ids.map((id, index) => [id, titles[index], true]);
+                }
+
+                let collection = [];
+
+                if (fileExtension === 'json' || fileExtension === 'pdb') {
+                    let reader = new FileReader();
+                    reader.onload = async function (e) {
+                        if (fileExtension === 'json') {
+                            collection = parseJsonCollection(e.target.result);
+                        } else if (fileExtension === 'pdb') {
+                            collection = parsePdbCollection(e.target.result);
+                        }
+
+                        let collectionHtml = await ic.selectCollectionsCls.setAtomMenu(collection);
+
+                        console.log('collection', collection);
+                        console.log('colletionHtml', collectionHtml);
+
+                        $("#" + ic.pre + "collections_menu").html(collectionHtml);
+                        await ic.selectCollectionsCls.clickStructure(collection);
+
+                        $("#" + ic.pre + "collections_menu").trigger("change");
+
+                        me.htmlCls.clickMenuCls.setLogCmd(
+                            "load collection file " +
+                            $("#" + me.pre + "collectionfile").val(),
+                            false
+                        );
+                    };
+
+                    reader.readAsText(file);
+                } else if (fileExtension === 'zip') {
+                    let reader2 = new FileReader();
+                    reader2.onload = async function (e) {
+                        let url = './script/jszip.js';
+                        await me.getAjaxPromise(url, 'script');
+                        console.log('JSZip loaded');
+
+                        let jszip = new JSZip();
+                        try {
+                            let data = await jszip.loadAsync(e.target.result);
+                            console.log('JSZip data loaded');
+
+                            for (let fileName in data.files) {
+                                let file = data.files[fileName];
+                                if (!file.dir) {
+                                    let fileData = await file.async('text');
+                                    console.log(`File: ${fileName}`);
+                                    if (fileName.endsWith('.json')) {
+                                        parseJsonCollection(fileData).forEach(element => {
+                                            collection.push(element);
+                                        });
+                                    } else if (fileName.endsWith('.pdb')) {
+                                        parsePdbCollection(fileData).forEach(element => {
+                                            collection.push(element);
+                                        });
+                                    }
+                                    console.log(collection);
+                                }
+                            }
+                        } catch (error) {
+                            console.error('Error loading ZIP file', error);
+                        }
+
+                        let collectionHtml = await ic.selectCollectionsCls.setAtomMenu(collection);
+
+                        console.log('collection', collection);
+                        console.log('colletionHtml', collectionHtml);
+
+                        $("#" + ic.pre + "collections_menu").html(collectionHtml);
+                        await ic.selectCollectionsCls.clickStructure(collection);
+
+                        $("#" + ic.pre + "collections_menu").trigger("change");
+
+                        me.htmlCls.clickMenuCls.setLogCmd(
+                            "load collection file " +
+                            $("#" + me.pre + "collectionfile").val(),
+                            false
+                        );
+                    };
+
+                    reader2.onerror = function(error) {
+                        console.error('Error reading file', error);
+                    };
+
+                    reader2.readAsArrayBuffer(file);
+                } else {
+                    throw new Error('Invalid file type');
+                }
                 
                 if (Object.keys(me.utilsCls.getStructures(ic.dAtoms))){
                     $("#" + me.pre + "dl_collection_file").hide();
@@ -28073,7 +28211,7 @@ var icn3d = (function (exports) {
 
                 let offset = 0, color;
                 if(bHighlight === 2 && bRibbon) {
-                    for (let i = 0; i < pnts.length; ++i, offset += 3) {
+                    for (let i = 0, divInv = 1 / div; i < pnts.length; ++i, offset += 3) {
                         // shift the highlight a little bit to avoid the overlap with ribbon
                         pnts[i].addScalar(0.6); // ic.ribbonthickness is 0.4
                         //geo.vertices.push(pnts[i]);
@@ -28093,7 +28231,7 @@ var icn3d = (function (exports) {
                     }
                 }
                 else {
-                    for (let i = 0; i < pnts.length; ++i, offset += 3) {
+                    for (let i = 0, divInv = 1 / div; i < pnts.length; ++i, offset += 3) {
                         //geo.vertices.push(pnts[i]);
                         //geo.colors.push(me.parasCls.thr(colors[i]));
 
@@ -29911,7 +30049,7 @@ var icn3d = (function (exports) {
                 }
                 let faces = [[0, 2, -6, -8], [-4, -2, 6, 4], [7, 3, -5, -1], [-3, -7, 1, 5]];
 
-                for (let i = 1, lim = p0.length; i < lim; ++i) {
+                for (let i = 1, lim = p0.length, divInv = 1 / div; i < lim; ++i) {
                     let offsetTmp = 8 * i;
                     //var color = me.parasCls.thr(colors[i - 1]);
                     for (let j = 0; j < 4; ++j) {
@@ -34444,6 +34582,7 @@ var icn3d = (function (exports) {
         }
 
         applyMissingResOptions(options) { let ic = this.icn3d; ic.icn3dui;
+            if(options === undefined) options = ic.opts;
 
             if(!ic.bCalcMissingRes) {
                 // find all bonds to chemicals
@@ -34556,6 +34695,7 @@ var icn3d = (function (exports) {
 
         //Apply style and label options to a certain set of atoms.
         applyDisplayOptions(options, atoms, bHighlight) { let ic = this.icn3d, me = ic.icn3dui;
+            if(options === undefined) options = ic.opts;
 
             // get parameters from cookies
             if(!me.bNode && me.htmlCls.setHtmlCls.getCookie('lineRadius') != '') {
@@ -45312,14 +45452,14 @@ var icn3d = (function (exports) {
 
                               let strand, itemRgb;
 
-                              if(fieldArray.length > 4) ;
+                              if(fieldArray.length > 4) fieldArray[4];
                               if(fieldArray.length > 5) strand = fieldArray[5]; // ., +, or -
-                              if(fieldArray.length > 6) ;
-                              if(fieldArray.length > 7) ;
+                              if(fieldArray.length > 6) fieldArray[6];
+                              if(fieldArray.length > 7) fieldArray[7];
                               if(fieldArray.length > 8) itemRgb = fieldArray[8];
-                              if(fieldArray.length > 9) ;
-                              if(fieldArray.length > 10) ;
-                              if(fieldArray.length > 11) ;
+                              if(fieldArray.length > 9) fieldArray[9];
+                              if(fieldArray.length > 10) fieldArray[10];
+                              if(fieldArray.length > 11) fieldArray[11];
 
                            let title = trackName;
 
@@ -49984,6 +50124,7 @@ var icn3d = (function (exports) {
 
         //Show the highlight for the selected atoms: hAtoms.
         addHlObjects(color, bRender, atomsHash) { let ic = this.icn3d, me = ic.icn3dui;
+           if(color === undefined) color = ic.hColor;
            //if(atomsHash === undefined) atomsHash = ic.hAtoms;
            let atomsHashDisplay = (atomsHash) ? me.hashUtilsCls.intHash(atomsHash, ic.dAtoms) : me.hashUtilsCls.intHash(ic.hAtoms, ic.dAtoms);
 
@@ -56384,7 +56525,7 @@ var icn3d = (function (exports) {
             }
 
             let molid2rescount = data.moleculeInfor;
-            let molid2color = {}, chain2molid = {}, molid2chain = {};
+            let molid2chain = {};
             let chainNameHash = {};       
             for(let i in molid2rescount) {
               if(Object.keys(molid2rescount[i]).length === 0) continue;
@@ -56405,9 +56546,6 @@ var icn3d = (function (exports) {
 
               let chainNameFinal =(chainNameHash[chainName] === 1) ? chainName : chainName + chainNameHash[chainName].toString();
               let chain = id + '_' + chainNameFinal;
-
-              molid2color[i] = color;
-              chain2molid[chain] = i;
               molid2chain[i] = chain;
 
             //   ic.chainsColor[chain] = (type !== undefined && !me.cfg.mmdbafid) ? me.parasCls.thr(me.htmlCls.GREY8) : me.parasCls.thr(color);
@@ -62180,28 +62318,19 @@ var icn3d = (function (exports) {
               if(!ic.chainsMapping[chainid1]) ic.chainsMapping[chainid1] = {};
               if(!ic.chainsMapping[chainid2]) ic.chainsMapping[chainid2] = {};
 
-              let posChain1 = {}, posChain2 = {};
-
               for(let i = 0, il = ic.qt_start_end[chainIndex].length; i < il; ++i) {
-                let start1, start2, end1, end2;
                 if(bRealign && me.cfg.aligntool == 'tmalign') { // real residue numbers are stored, could be "100a"
-                    start1 = parseInt(ic.qt_start_end[chainIndex][i].t_start);
-                    start2 = parseInt(ic.qt_start_end[chainIndex][i].q_start);
-                    end1 = parseInt(ic.qt_start_end[chainIndex][i].t_end);
-                    end2 = parseInt(ic.qt_start_end[chainIndex][i].q_end); 
+                    parseInt(ic.qt_start_end[chainIndex][i].t_start);
+                    parseInt(ic.qt_start_end[chainIndex][i].q_start);
+                    parseInt(ic.qt_start_end[chainIndex][i].t_end);
+                    parseInt(ic.qt_start_end[chainIndex][i].q_end); 
                 }
                 else {
-                  start1 = parseInt(ic.qt_start_end[chainIndex][i].t_start - 1);
-                  start2 = parseInt(ic.qt_start_end[chainIndex][i].q_start - 1);
-                  end1 = parseInt(ic.qt_start_end[chainIndex][i].t_end - 1);
-                  end2 = parseInt(ic.qt_start_end[chainIndex][i].q_end - 1);  
+                  parseInt(ic.qt_start_end[chainIndex][i].t_start - 1);
+                  parseInt(ic.qt_start_end[chainIndex][i].q_start - 1);
+                  parseInt(ic.qt_start_end[chainIndex][i].t_end - 1);
+                  parseInt(ic.qt_start_end[chainIndex][i].q_end - 1);  
                 }
-
-                posChain1[start1] = 1;
-                posChain1[end1] = 1;
-
-                posChain2[start2] = 1;
-                posChain2[end2] = 1;
               }
 
               for(let i = 0, il = ic.qt_start_end[chainIndex].length; i < il; ++i) {
@@ -62223,8 +62352,6 @@ var icn3d = (function (exports) {
                       let index1 = alignIndex;
                       
                       for(let j = prevIndex1 + 1, jl = start1; j < jl; ++j) {
-                          //if(posChain1[j]) continue;
-                          posChain1[j] = 1;
 
                           //if(ic.chainsSeq[chainid1] === undefined || ic.chainsSeq[chainid1][j] === undefined) break;
 
@@ -62246,8 +62373,6 @@ var icn3d = (function (exports) {
                       let index2 = alignIndex;
 
                       for(let j = prevIndex2 + 1, jl = start2; j < jl; ++j) {
-                          //if(posChain2[j]) continue;
-                          posChain2[j] = 1;
 
                           //if(ic.chainsSeq[chainid2] === undefined || ic.chainsSeq[chainid2] === undefined) break;
 
@@ -63407,8 +63532,13 @@ var icn3d = (function (exports) {
                      else if (remarkType == 350 && line.substr(13, 5) == 'BIOMT') {
                         let n = parseInt(line[18]) - 1;
                         //var m = parseInt(line.substr(21, 2));
-                        let m = parseInt(line.substr(21, 2)) - 1; // start from 1
-                        if (ic.biomtMatrices[m] == undefined) ic.biomtMatrices[m] = new THREE.Matrix4().identity();
+                         let m = parseInt(line.substr(21, 2)) - 1; // start from 1
+                         console.log('ic.biomtMatrices', ic.biomtMatrices);
+                         console.log(line);
+                         console.log('n', line.substr(21, 2));
+                         console.log('m', line[18]);
+                        //if (ic.biomtMatrices === undefined) ic.biomtMatrices = [];
+                        if (ic.biomtMatrices[m] === undefined) ic.biomtMatrices[m] = new THREE.Matrix4().identity();
                         ic.biomtMatrices[m].elements[n] = parseFloat(line.substr(24, 9));
                         ic.biomtMatrices[m].elements[n + 4] = parseFloat(line.substr(34, 9));
                         ic.biomtMatrices[m].elements[n + 8] = parseFloat(line.substr(44, 9));
@@ -63640,7 +63770,6 @@ var icn3d = (function (exports) {
                     else {
                         secondaries = 'o';
                     }
-
                     ic.secondaries[residueNum] = secondaries;
 
                     // different residue
@@ -68284,15 +68413,14 @@ var icn3d = (function (exports) {
       }
 
       //Set the menu of defined sets with an array of defined names "commandnameArray".
-      setAtomMenu(nameArray, titleArray) {
+      setAtomMenu(nameArray) {
         let ic = this.icn3d;
         ic.icn3dui;
         let html = "";
-        let commandnameArray = [nameArray[0]];
         //for(let i in ic.defNames2Atoms) {
         for (let i = 0, il = nameArray.length; i < il; ++i) {
-          let name = nameArray[i];
-          let title = titleArray[i];
+          let name = nameArray[i][0];
+          let title = nameArray[i][1];
 
           let atomHash;
           if (
@@ -68315,10 +68443,10 @@ var icn3d = (function (exports) {
             }
           }
 
-          if (commandnameArray.indexOf(name) != -1) {
+          if (i == 0) {
             html +=
               "<option value='" +
-              name +
+              nameArray[0][1] +
               "' selected='selected'>" +
               title +
               "</option>";
@@ -68365,32 +68493,12 @@ var icn3d = (function (exports) {
           }
 
           return difference;
-        }
+      }
 
-      clickStructure() {
+      clickStructure(collection) {
         let ic = this.icn3d,
           me = ic.icn3dui;
         let thisClass = this;
-
-        if (ic.allData == undefined) {
-          ic.allData = {};
-          ic.allData['all'] = {
-            'atoms': {},
-            'proteins': {},
-            'nucleotides': {},
-            'chemicals': {},
-            'ions': {},
-            'water': {},
-            'structures': {},
-            'ssbondpnts': {},
-            'residues': {},
-            'chains': {},
-            'chainsSeq': {}, //Sequences and Annotation
-            'defNames2Atoms': {},
-            'defNames2Residues': {}
-          };
-          ic.allData['prev'] = {};
-        }
 
         //me.myEventCls.onIds("#" + ic.pre + "atomsCustom", "change", function(e) { let  ic = thisClass.icn3d;
         $("#" + ic.pre + "collections_menu").change(async function (e) {
@@ -68398,16 +68506,22 @@ var icn3d = (function (exports) {
 
           let nameArray = $(this).val();
           let nameStructure = $(this).find("option:selected").text();
+          let selectedIndices = Array.from(this.selectedOptions).map(option => option.index);
+          let selectedIndicesMap = nameArray.reduce((map, name, i) => {
+            map[name] = selectedIndices[i];
+            return map;
+          }, {});
+
+          console.log('selectedIndices', selectedIndices);
+          console.log('selectedIndicesMap', selectedIndicesMap);
 
           ic.nameArray = nameArray;
           if (nameArray !== null) {
-            // let chainIdHash = {};
-
             let bNoDuplicate = true;
             thisClass.reset();
             for (const name of nameArray) {
               if (!(name in ic.allData)) {
-                ic.allData['prev'] = JSON.parse(JSON.stringify(ic.allData['all']));//me.hashUtilsCls.cloneHash(ic.allData['all']);
+                ic.allData['prev'] = JSON.parse(JSON.stringify(ic.allData['all']));
 
                 ic.atoms = ic.allData['all']['atoms'];
                 
@@ -68424,7 +68538,23 @@ var icn3d = (function (exports) {
                 ic.chainsSeq = ic.allData['all']['chainsSeq'];
                 ic.defalls2Atoms = ic.allData['all']['defalls2Atoms'];
                 ic.defalls2Residues = ic.allData['all']['defalls2Residues'];
-                await ic.chainalignParserCls.downloadMmdbAf(name, undefined, undefined, bNoDuplicate).then(() => {
+
+                async function loadStructure(pdb) {
+                  if (pdb) {
+                    console.log('ic.pdbCollection', ic.pdbCollection);
+                    console.log('index', selectedIndicesMap[name]);
+                    let bAppend = true;
+                    if (Object.keys(ic.structures).length == 0) {
+                      bAppend = false;
+                    }
+                    await ic.pdbParserCls.loadPdbData(ic.pdbCollection[selectedIndicesMap[name]].join('\n'), undefined, undefined, bAppend);
+                    console.log('title', ic.molTitle);
+                  } else {
+                    await ic.chainalignParserCls.downloadMmdbAf(name, undefined, undefined, bNoDuplicate);
+                  }
+                }
+
+                await loadStructure(collection[selectedIndicesMap[name]][3]).then(() => {
                   ic.allData['all'] = {
                     'atoms': ic.atoms,
                     'proteins': ic.proteins,
@@ -68432,14 +68562,15 @@ var icn3d = (function (exports) {
                     'chemicals': ic.chemicals,
                     'ions': ic.ions,
                     'water': ic.water,
-                    'structures': ic.structures,
+                    'structures': ic.structures, // getSSExpandedAtoms
                     'ssbondpnts': ic.ssbondpnts,
-                    'residues': ic.residues,
+                    'residues': ic.residues, // getSSExpandedAtoms
                     'chains': ic.chains,
                     'chainsSeq': ic.chainsSeq, //Sequences and Annotation
                     'defNames2Atoms': ic.defNames2Atoms,
                     'defNames2Residues': ic.defNames2Residues
                   };
+                  console.log('all', ic.allData);
 
                   ic.allData[name] = {
                     'atoms': thisClass.dictionaryDifference(ic.allData['prev']['atoms'], ic.atoms),
@@ -68448,16 +68579,16 @@ var icn3d = (function (exports) {
                     'chemicals': thisClass.dictionaryDifference(ic.allData['prev']['chemicals'], ic.chemicals),
                     'ions': thisClass.dictionaryDifference(ic.allData['prev']['ions'], ic.ions),
                     'water': thisClass.dictionaryDifference(ic.allData['prev']['water'], ic.water),
-                    'structures': thisClass.dictionaryDifference(ic.allData['prev']['structures'], ic.structures),
+                    'structures': thisClass.dictionaryDifference(ic.allData['prev']['structures'], ic.structures), // getSSExpandedAtoms
                     'ssbondpnts': thisClass.dictionaryDifference(ic.allData['prev']['ssbondpnts'], ic.ssbondpnts),
-                    'residues': thisClass.dictionaryDifference(ic.allData['prev']['residues'], ic.residues),
+                    'residues': thisClass.dictionaryDifference(ic.allData['prev']['residues'], ic.residues), // getSSExpandedAtoms
                     'chains': thisClass.dictionaryDifference(ic.allData['prev']['chains'], ic.chains),
                     'chainsSeq': thisClass.dictionaryDifference(ic.allData['prev']['chainsSeq'], ic.chainsSeq), //Sequences and Annotation
                     'defNames2Atoms': thisClass.dictionaryDifference(ic.allData['prev']['defNames2Atoms'], ic.defNames2Atoms),
                     'defNames2Residues': thisClass.dictionaryDifference(ic.allData['prev']['defNames2Residues'], ic.defNames2Residues)
                   };
+                  console.log(name, ic.allData);
 
-                  // ic.atoms = Object.assign(ic.atoms, ic.atomsTemp);
                   thisClass.reset();
                 });
               }
@@ -68480,10 +68611,11 @@ var icn3d = (function (exports) {
                 ic.defNames2Residues = Object.assign(ic.defNames2Residues, ic.allData[name]['defNames2Residues']);
                 ic.dAtoms = me.hashUtilsCls.cloneHash(ic.atoms);
                 ic.hAtoms = me.hashUtilsCls.cloneHash(ic.atoms);
-              }
+            }
+            
+            console.log(ic.allData);
               
             ic.opts["color"] = (Object.keys(ic.structures).length == 1) ? "chain" : "structure";
-            // ic.setStyleCls.setAtomStyleByOptions();
             ic.setColorCls.setColorByOptions(ic.opts, ic.atoms);
 
             ic.transformCls.zoominSelection();

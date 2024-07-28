@@ -180,8 +180,13 @@ class LoadPDB {
                  else if (remarkType == 350 && line.substr(13, 5) == 'BIOMT') {
                     let n = parseInt(line[18]) - 1;
                     //var m = parseInt(line.substr(21, 2));
-                    let m = parseInt(line.substr(21, 2)) - 1; // start from 1
-                    if (ic.biomtMatrices[m] == undefined) ic.biomtMatrices[m] = new THREE.Matrix4().identity();
+                     let m = parseInt(line.substr(21, 2)) - 1; // start from 1
+                     console.log('ic.biomtMatrices', ic.biomtMatrices)
+                     console.log(line)
+                     console.log('n', line.substr(21, 2))
+                     console.log('m', line[18])
+                    //if (ic.biomtMatrices === undefined) ic.biomtMatrices = [];
+                    if (ic.biomtMatrices[m] === undefined) ic.biomtMatrices[m] = new THREE.Matrix4().identity();
                     ic.biomtMatrices[m].elements[n] = parseFloat(line.substr(24, 9));
                     ic.biomtMatrices[m].elements[n + 4] = parseFloat(line.substr(34, 9));
                     ic.biomtMatrices[m].elements[n + 8] = parseFloat(line.substr(44, 9));
@@ -422,7 +427,6 @@ class LoadPDB {
                 else {
                     secondaries = 'o';
                 }
-
                 ic.secondaries[residueNum] = secondaries;
 
                 // different residue

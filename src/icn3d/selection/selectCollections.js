@@ -8,15 +8,14 @@ class SelectCollections {
   }
 
   //Set the menu of defined sets with an array of defined names "commandnameArray".
-  setAtomMenu(nameArray, titleArray) {
+  setAtomMenu(nameArray) {
     let ic = this.icn3d,
     me = ic.icn3dui;
     let html = "";
-    let commandnameArray = [nameArray[0]];
     //for(let i in ic.defNames2Atoms) {
     for (let i = 0, il = nameArray.length; i < il; ++i) {
-      let name = nameArray[i];
-      let title = titleArray[i];
+      let name = nameArray[i][0];
+      let title = nameArray[i][1];
 
       let atom, atomHash;
       if (
@@ -39,10 +38,10 @@ class SelectCollections {
         }
       }
 
-      if (commandnameArray.indexOf(name) != -1) {
+      if (i == 0) {
         html +=
           "<option value='" +
-          name +
+          nameArray[0][1] +
           "' selected='selected'>" +
           title +
           "</option>";
@@ -89,32 +88,12 @@ class SelectCollections {
       }
 
       return difference;
-    }
+  }
 
-  clickStructure() {
+  clickStructure(collection) {
     let ic = this.icn3d,
       me = ic.icn3dui;
     let thisClass = this;
-
-    if (ic.allData == undefined) {
-      ic.allData = {}
-      ic.allData['all'] = {
-        'atoms': {},
-        'proteins': {},
-        'nucleotides': {},
-        'chemicals': {},
-        'ions': {},
-        'water': {},
-        'structures': {},
-        'ssbondpnts': {},
-        'residues': {},
-        'chains': {},
-        'chainsSeq': {}, //Sequences and Annotation
-        'defNames2Atoms': {},
-        'defNames2Residues': {}
-      };
-      ic.allData['prev'] = {}
-    }
 
     //me.myEventCls.onIds("#" + ic.pre + "atomsCustom", "change", function(e) { let  ic = thisClass.icn3d;
     $("#" + ic.pre + "collections_menu").change(async function (e) {
@@ -122,16 +101,22 @@ class SelectCollections {
 
       let nameArray = $(this).val();
       let nameStructure = $(this).find("option:selected").text();
+      let selectedIndices = Array.from(this.selectedOptions).map(option => option.index);
+      let selectedIndicesMap = nameArray.reduce((map, name, i) => {
+        map[name] = selectedIndices[i];
+        return map;
+      }, {});
+
+      console.log('selectedIndices', selectedIndices)
+      console.log('selectedIndicesMap', selectedIndicesMap)
 
       ic.nameArray = nameArray;
       if (nameArray !== null) {
-        // let chainIdHash = {};
-
         let bNoDuplicate = true;
         thisClass.reset()
         for (const name of nameArray) {
           if (!(name in ic.allData)) {
-            ic.allData['prev'] = JSON.parse(JSON.stringify(ic.allData['all']));//me.hashUtilsCls.cloneHash(ic.allData['all']);
+            ic.allData['prev'] = JSON.parse(JSON.stringify(ic.allData['all']));
 
             ic.atoms = ic.allData['all']['atoms'];
             
@@ -148,7 +133,23 @@ class SelectCollections {
             ic.chainsSeq = ic.allData['all']['chainsSeq']
             ic.defalls2Atoms = ic.allData['all']['defalls2Atoms']
             ic.defalls2Residues = ic.allData['all']['defalls2Residues']
-            await ic.chainalignParserCls.downloadMmdbAf(name, undefined, undefined, bNoDuplicate).then(() => {
+
+            async function loadStructure(pdb) {
+              if (pdb) {
+                console.log('ic.pdbCollection', ic.pdbCollection)
+                console.log('index', selectedIndicesMap[name])
+                let bAppend = true;
+                if (Object.keys(ic.structures).length == 0) {
+                  bAppend = false;
+                }
+                await ic.pdbParserCls.loadPdbData(ic.pdbCollection[selectedIndicesMap[name]].join('\n'), undefined, undefined, bAppend);
+                console.log('title', ic.molTitle)
+              } else {
+                await ic.chainalignParserCls.downloadMmdbAf(name, undefined, undefined, bNoDuplicate);
+              }
+            }
+
+            await loadStructure(collection[selectedIndicesMap[name]][3]).then(() => {
               ic.allData['all'] = {
                 'atoms': ic.atoms,
                 'proteins': ic.proteins,
@@ -156,14 +157,15 @@ class SelectCollections {
                 'chemicals': ic.chemicals,
                 'ions': ic.ions,
                 'water': ic.water,
-                'structures': ic.structures,
+                'structures': ic.structures, // getSSExpandedAtoms
                 'ssbondpnts': ic.ssbondpnts,
-                'residues': ic.residues,
+                'residues': ic.residues, // getSSExpandedAtoms
                 'chains': ic.chains,
                 'chainsSeq': ic.chainsSeq, //Sequences and Annotation
                 'defNames2Atoms': ic.defNames2Atoms,
                 'defNames2Residues': ic.defNames2Residues
               };
+              console.log('all', ic.allData)
 
               ic.allData[name] = {
                 'atoms': thisClass.dictionaryDifference(ic.allData['prev']['atoms'], ic.atoms),
@@ -172,16 +174,16 @@ class SelectCollections {
                 'chemicals': thisClass.dictionaryDifference(ic.allData['prev']['chemicals'], ic.chemicals),
                 'ions': thisClass.dictionaryDifference(ic.allData['prev']['ions'], ic.ions),
                 'water': thisClass.dictionaryDifference(ic.allData['prev']['water'], ic.water),
-                'structures': thisClass.dictionaryDifference(ic.allData['prev']['structures'], ic.structures),
+                'structures': thisClass.dictionaryDifference(ic.allData['prev']['structures'], ic.structures), // getSSExpandedAtoms
                 'ssbondpnts': thisClass.dictionaryDifference(ic.allData['prev']['ssbondpnts'], ic.ssbondpnts),
-                'residues': thisClass.dictionaryDifference(ic.allData['prev']['residues'], ic.residues),
+                'residues': thisClass.dictionaryDifference(ic.allData['prev']['residues'], ic.residues), // getSSExpandedAtoms
                 'chains': thisClass.dictionaryDifference(ic.allData['prev']['chains'], ic.chains),
                 'chainsSeq': thisClass.dictionaryDifference(ic.allData['prev']['chainsSeq'], ic.chainsSeq), //Sequences and Annotation
                 'defNames2Atoms': thisClass.dictionaryDifference(ic.allData['prev']['defNames2Atoms'], ic.defNames2Atoms),
                 'defNames2Residues': thisClass.dictionaryDifference(ic.allData['prev']['defNames2Residues'], ic.defNames2Residues)
               };
+              console.log(name, ic.allData)
 
-              // ic.atoms = Object.assign(ic.atoms, ic.atomsTemp);
               thisClass.reset()
             });
           }
@@ -204,10 +206,11 @@ class SelectCollections {
             ic.defNames2Residues = Object.assign(ic.defNames2Residues, ic.allData[name]['defNames2Residues'])
             ic.dAtoms = me.hashUtilsCls.cloneHash(ic.atoms);
             ic.hAtoms = me.hashUtilsCls.cloneHash(ic.atoms);
-          }
+        }
+        
+        console.log(ic.allData)
           
         ic.opts["color"] = (Object.keys(ic.structures).length == 1) ? "chain" : "structure";
-        // ic.setStyleCls.setAtomStyleByOptions();
         ic.setColorCls.setColorByOptions(ic.opts, ic.atoms);
 
         ic.transformCls.zoominSelection();

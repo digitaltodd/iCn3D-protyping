@@ -1333,27 +1333,165 @@ class Events {
             } else {
                 ic.resizeCanvasCls.closeDialogs();
             }
-            me.htmlCls.setHtmlCls.fileSupport();
-                let reader = new FileReader();
-                
-                reader.onload = async function (e) {
-                let dataStr = JSON.parse(e.target.result);
-                let collection = [dataStr["structures"].map(({ id }) => id), dataStr["structures"].map(({ title }) => title)];
-                let collectionHtml = ic.selectCollectionsCls.setAtomMenu(collection[0], collection[1]);
-
-                $("#" + ic.pre + "collections_menu").html(collectionHtml);
-                ic.selectCollectionsCls.clickStructure();
-    
-                $("#" + ic.pre + "collections_menu").trigger("change");
-    
-                me.htmlCls.clickMenuCls.setLogCmd(
-                "load collection file " +
-                    $("#" + me.pre + "collectionfile").val(),
-                false
-                );
-                
+            
+            ic.pdbCollection = [];
+            ic.allData = {}
+            ic.allData['all'] = {
+                'atoms': {},
+                'proteins': {},
+                'nucleotides': {},
+                'chemicals': {},
+                'ions': {},
+                'water': {},
+                'structures': {}, // getSSExpandedAtoms
+                'ssbondpnts': {},
+                'residues': {}, // getSSExpandedAtoms
+                'chains': {},
+                'chainsSeq': {}, //Sequences and Annotation
+                'defNames2Atoms': {},
+                'defNames2Residues': {}
             };
-            reader.readAsText(file);
+            ic.allData['prev'] = {}
+            ic.selectCollectionsCls.reset()
+
+            ic.dAtoms = me.hashUtilsCls.cloneHash(ic.atoms);
+            ic.hAtoms = me.hashUtilsCls.cloneHash(ic.atoms);
+            me.htmlCls.setHtmlCls.fileSupport();
+
+            let fileName = file.name;
+            let fileExtension = fileName.split('.').pop().toLowerCase();
+
+            $("#" + ic.pre + "collections_menu").empty();
+            $("#" + ic.pre + "collections_menu").off("change");
+
+            function parseJsonCollection(data) {
+                let dataStr = JSON.parse(data);
+                return dataStr["structures"].map(({ id, title }) => [id, title, false]);
+            }
+
+            function parsePdbCollection(data) {
+                let dataStr = data;
+                let lines = dataStr.split('\n');
+              
+                let sections = [];
+                let currentSection = [];
+              
+                lines.forEach(line => {
+                  if (line.startsWith('HEADER')) {
+                    currentSection = [];
+                    sections.push(currentSection);
+                  }
+                  currentSection.push(line);
+                });
+              
+                console.log(sections)
+              
+                let ids = [];
+                let titles = [];
+              
+                sections.forEach((section) => {
+                  let headerLine = section[0];
+                  headerLine = headerLine.replace(/[\n\r]/g, '').trim();
+                  let header = headerLine.split(' ').filter(Boolean);
+                  let lastElement = header[header.length - 1];
+                  ids.push(lastElement);
+                  titles.push(lastElement);
+                });
+              
+                if (sections.length > 0) {
+                    ic.pdbCollection.push(...sections);
+                }
+
+                return ids.map((id, index) => [id, titles[index], true]);
+            }
+
+            let collection = [];
+
+            if (fileExtension === 'json' || fileExtension === 'pdb') {
+                let reader = new FileReader();
+                reader.onload = async function (e) {
+                    if (fileExtension === 'json') {
+                        collection = parseJsonCollection(e.target.result);
+                    } else if (fileExtension === 'pdb') {
+                        collection = parsePdbCollection(e.target.result);
+                    }
+
+                    let collectionHtml = await ic.selectCollectionsCls.setAtomMenu(collection);
+
+                    console.log('collection', collection);
+                    console.log('colletionHtml', collectionHtml);
+
+                    $("#" + ic.pre + "collections_menu").html(collectionHtml);
+                    await ic.selectCollectionsCls.clickStructure(collection);
+
+                    $("#" + ic.pre + "collections_menu").trigger("change");
+
+                    me.htmlCls.clickMenuCls.setLogCmd(
+                        "load collection file " +
+                        $("#" + me.pre + "collectionfile").val(),
+                        false
+                    );
+                };
+
+                reader.readAsText(file);
+            } else if (fileExtension === 'zip') {
+                let reader2 = new FileReader();
+                reader2.onload = async function (e) {
+                    let url = './script/jszip.js';
+                    await me.getAjaxPromise(url, 'script');
+                    console.log('JSZip loaded');
+
+                    let jszip = new JSZip();
+                    try {
+                        let data = await jszip.loadAsync(e.target.result);
+                        console.log('JSZip data loaded');
+
+                        for (let fileName in data.files) {
+                            let file = data.files[fileName];
+                            if (!file.dir) {
+                                let fileData = await file.async('text');
+                                console.log(`File: ${fileName}`);
+                                if (fileName.endsWith('.json')) {
+                                    parseJsonCollection(fileData).forEach(element => {
+                                        collection.push(element);
+                                    });
+                                } else if (fileName.endsWith('.pdb')) {
+                                    parsePdbCollection(fileData).forEach(element => {
+                                        collection.push(element);
+                                    });
+                                }
+                                console.log(collection);
+                            }
+                        }
+                    } catch (error) {
+                        console.error('Error loading ZIP file', error);
+                    }
+
+                    let collectionHtml = await ic.selectCollectionsCls.setAtomMenu(collection);
+
+                    console.log('collection', collection);
+                    console.log('colletionHtml', collectionHtml);
+
+                    $("#" + ic.pre + "collections_menu").html(collectionHtml);
+                    await ic.selectCollectionsCls.clickStructure(collection);
+
+                    $("#" + ic.pre + "collections_menu").trigger("change");
+
+                    me.htmlCls.clickMenuCls.setLogCmd(
+                        "load collection file " +
+                        $("#" + me.pre + "collectionfile").val(),
+                        false
+                    );
+                };
+
+                reader2.onerror = function(error) {
+                    console.error('Error reading file', error);
+                };
+
+                reader2.readAsArrayBuffer(file);
+            } else {
+                throw new Error('Invalid file type');
+            }
             
             if (Object.keys(me.utilsCls.getStructures(ic.dAtoms))){
                 $("#" + me.pre + "dl_collection_file").hide()

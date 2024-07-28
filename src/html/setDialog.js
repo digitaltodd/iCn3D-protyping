@@ -481,7 +481,7 @@ class SetDialog {
         html += me.htmlCls.divStr + "dl_collectionsMenu'>";
         html += '<b>Collection File</b>: <div style="width:20px; margin-top:6px; display:inline-block;"><span id="' + me.pre + 'dl_collection_file_expand" class="ui-icon ui-icon-plus icn3d-expand icn3d-link" style="display:none; width:15px;" title="Expand"></span><span id="' + me.pre + 'dl_collection_file_shrink" class="ui-icon ui-icon-minus icn3d-shrink icn3d-link" style="width:15px;" title="Shrink"></span></div><br>';
         html += me.htmlCls.divStr + "dl_collection_file' style=''>";
-        html += "You can load a collection of structures via a file. Here is <a href='https://github.com/ncbi/icn3d/blob/master/example/collection.json' target='_blank'>one example file</a><br><br>";
+        html += "You can load a collection of structures via a file. Here are <a href='https://github.com/ncbi/icn3d/blob/master/example/collection/' target='_blank'>some example files</a><br><br>";
         html += "Collection file: " + me.htmlCls.inputFileStr + "id='" + me.pre + "collectionfile'><br/>";
         html += me.htmlCls.buttonStr + "reload_collectionfile' style='margin-top: 6px;'>Load</button>";
         html += "</div>";
